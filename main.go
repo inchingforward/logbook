@@ -1,7 +1,32 @@
 package main
 
-import "fmt"
+import (
+	"flag"
+	"fmt"
+	"log"
+
+	"github.com/inchingforward/logbook/handlers"
+	"github.com/inchingforward/logbook/view"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
+)
 
 func main() {
 	fmt.Println("Hello, world!")
+
+	debug := false
+
+	flag.BoolVar(&debug, "debug", false, "true to enable debug")
+	flag.Parse()
+
+	e := echo.New()
+
+	view.SetRenderer(e, debug)
+
+	e.Static("/static", "static")
+
+	handlers.AddHandlers(e)
+
+	log.Println("Listening on 4003...")
+	e.Run(standard.New(":4003"))
 }
