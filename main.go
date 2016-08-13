@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	"github.com/inchingforward/logbook/handlers"
@@ -12,8 +11,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello, world!")
-
 	debug := false
 
 	flag.BoolVar(&debug, "debug", false, "true to enable debug")
