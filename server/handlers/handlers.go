@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/inchingforward/logbook/view"
+	"github.com/inchingforward/logbook/server/view"
 	"github.com/labstack/echo"
 )
 
