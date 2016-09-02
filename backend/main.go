@@ -4,8 +4,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/inchingforward/logbook/server/handlers"
-	"github.com/inchingforward/logbook/server/view"
+	"github.com/inchingforward/logbook/backend/handlers"
+	"github.com/inchingforward/logbook/backend/view"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 )
