@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/inchingforward/logbook/backend/view"
@@ -11,6 +11,11 @@ import (
 type Login struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+type Result struct {
+	Success bool    `json:"success"`
+	Message string  `json:"message"`
 }
 
 // AddHandlers add the Logbook handler functions to the Echo engine.
@@ -35,8 +40,10 @@ func login(c echo.Context) error {
 	}
 
 	if login.Username == "" || login.Password == "" {
-		return c.String(http.StatusOK, "ERROR: Invalid login")
+		return c.JSON(http.StatusOK, &Result{ false, "Invalid login"} )
 	}
 
-	return c.String(http.StatusOK, fmt.Sprintf("You sent '%v'", login))
+	log.Printf("Login for user %v", login.Username)
+
+	return c.JSON(http.StatusOK, &Result{ true, "Logged in"})
 }
