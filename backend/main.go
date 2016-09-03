@@ -5,10 +5,22 @@ import (
 	"log"
 
 	"github.com/inchingforward/logbook/backend/handlers"
+	"github.com/inchingforward/logbook/backend/models"
 	"github.com/inchingforward/logbook/backend/view"
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
+	_ "github.com/lib/pq"
 )
+
+func init() {
+	var err error
+
+	models.DB, err = sqlx.Connect("postgres", "user=logbook dbname=logbook sslmode=disable")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 func main() {
 	debug := false
