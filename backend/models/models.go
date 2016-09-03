@@ -1,11 +1,12 @@
 package models
 
 import (
-	"log"
+	"errors"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // DB represents a connection to the database.
@@ -36,13 +37,19 @@ type LogbookEntry struct {
 }
 
 // Authenticate returns the LogbookUser corresponding to username and password.
-func Authenticate(username, password string) (LogbookUser, error) {
-	user := LogbookUser{}
+func Authenticate(username, password string) (*LogbookUser, error) {
+	user := &LogbookUser{}
 
-	if DB == nil {
-		log.Printf("SHIT")
+	err := DB.Get(user, "select * from logbook_user where username = $1", username)
+
+	if err != nil {
+		return nil, err
 	}
-	err := DB.Get(&user, "select * from logbook_user where username = $1 and password = $2", username, password)
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return user, errors.New("Invalid user or password")
+	}
 
 	return user, err
 }
