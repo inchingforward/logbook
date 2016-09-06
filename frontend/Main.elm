@@ -4,6 +4,7 @@ import Html exposing (Html, button, div, input, text)
 import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Http
 
 
 main : Program Never
@@ -32,6 +33,8 @@ type Msg
     = ChangeUsername String
     | ChangePassword String
     | Login
+    | LoginSucceeded
+    | LoginFailed Http.Error
 
 
 
@@ -48,6 +51,12 @@ update msg model =
             { model | password = password }
 
         Login ->
+            model
+
+        LoginSucceeded ->
+            model
+
+        LoginFailed _ ->
             model
 
 
