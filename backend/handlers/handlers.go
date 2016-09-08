@@ -27,7 +27,17 @@ type Login struct {
 type Result struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
-	Data    string `json:"data"`
+}
+
+// A LoginResult holds the result of a login authentication.  If the
+// authentication failed, Success will be false and Message will detail
+// the reason.  If the authentication succeeded, Success will be true
+// and Token will contain the token to use for successive Logbook REST
+// requests.
+type LoginResult struct {
+	Success bool   `json:"success"`
+	Message string `'json:"message"`
+	Token   string `json:"token"`
 }
 
 type Claims struct {
@@ -64,13 +74,15 @@ func login(c echo.Context) error {
 	}
 
 	if login.Username == "" || login.Password == "" {
-		return c.JSON(http.StatusOK, &Result{false, "Invalid login", ""})
+		return c.JSON(http.StatusOK, &LoginResult{false, "Invalid login", ""})
 	}
 
 	log.Printf("Login for user %v", login.Username)
+
 	user, err := models.Authenticate(login.Username, login.Password)
 	if err != nil {
-		return err
+		log.Printf("Login error: %v\n", err)
+		return c.JSON(http.StatusOK, &LoginResult{false, "Unable to login", ""})
 	}
 
 	log.Printf("user %v successfully logged in!\n", user)
@@ -80,8 +92,9 @@ func login(c echo.Context) error {
 
 	t, err := token.SignedString([]byte(secret))
 	if err != nil {
-		return err
+		log.Printf("Login error: %v\n", err)
+		return c.JSON(http.StatusOK, &LoginResult{false, "Unable to create login token", ""})
 	}
 
-	return c.JSON(http.StatusOK, &Result{true, "Logged in", t})
+	return c.JSON(http.StatusOK, &LoginResult{true, "Logged in", t})
 }
