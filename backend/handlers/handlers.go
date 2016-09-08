@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/inchingforward/logbook/backend/models"
 	"github.com/inchingforward/logbook/backend/view"
 	"github.com/labstack/echo"
@@ -26,6 +27,12 @@ type Login struct {
 type Result struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
+	Data    string `json:"data"`
+}
+
+type Claims struct {
+	Username string `json:"username"`
+	jwt.StandardClaims
 }
 
 func init() {
@@ -57,7 +64,7 @@ func login(c echo.Context) error {
 	}
 
 	if login.Username == "" || login.Password == "" {
-		return c.JSON(http.StatusOK, &Result{false, "Invalid login"})
+		return c.JSON(http.StatusOK, &Result{false, "Invalid login", ""})
 	}
 
 	log.Printf("Login for user %v", login.Username)
@@ -68,5 +75,13 @@ func login(c echo.Context) error {
 
 	log.Printf("user %v successfully logged in!\n", user)
 
-	return c.JSON(http.StatusOK, &Result{true, "Logged in"})
+	claims := Claims{Username: user.Username}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	t, err := token.SignedString([]byte(secret))
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, &Result{true, "Logged in", t})
 }
