@@ -36,7 +36,7 @@ type Result struct {
 // requests.
 type LoginResult struct {
 	Success bool   `json:"success"`
-	Message string `'json:"message"`
+	Message string `json:"message"`
 	Token   string `json:"token"`
 }
 
