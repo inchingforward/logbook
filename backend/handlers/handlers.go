@@ -3,11 +3,14 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/inchingforward/logbook/backend/models"
 	"github.com/inchingforward/logbook/backend/view"
 	"github.com/labstack/echo"
 )
+
+var secret string
 
 // A Login holds a username and password a user attempted
 // to login with.
@@ -23,6 +26,13 @@ type Login struct {
 type Result struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
+}
+
+func init() {
+	secret := os.Getenv("LOGBOOK_SECRET")
+	if secret == "" {
+		log.Fatal("Required environment variable LOGBOOK_SECRET missing")
+	}
 }
 
 // AddHandlers add the Logbook handler functions to the Echo engine.
