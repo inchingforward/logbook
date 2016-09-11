@@ -5,11 +5,19 @@ import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
+import Json.Decode as JSDecode
+import Json.Encode as JSEncode
+import Task
 
 
 main : Program Never
 main =
-    App.beginnerProgram { model = model, view = view, update = update }
+    App.program
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
 
 
 
@@ -29,35 +37,77 @@ model =
     }
 
 
-type Msg
-    = ChangeUsername String
-    | ChangePassword String
-    | Login
-    | LoginSucceeded
-    | LoginFailed Http.Error
+init : ( Model, Cmd Msg )
+init =
+    ( { username = "", password = "" }, Cmd.none )
 
 
 
 -- Update
 
 
-update : Msg -> Model -> Model
+type Msg
+    = ChangeUsername String
+    | ChangePassword String
+    | Login
+    | LoginSucceeded String
+    | LoginFailed Http.Error
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ChangeUsername username ->
-            { model | username = username }
+            ( { model | username = username }, Cmd.none )
 
         ChangePassword password ->
-            { model | password = password }
+            ( { model | password = password }, Cmd.none )
 
         Login ->
-            model
+            ( model, login model )
 
-        LoginSucceeded ->
-            model
+        LoginSucceeded _ ->
+            ( model, Cmd.none )
 
         LoginFailed _ ->
-            model
+            ( model, Cmd.none )
+
+
+encodeModel : Model -> JSEncode.Value
+encodeModel model =
+    let
+        list =
+            [ ( "username", JSEncode.string model.username )
+            , ( "password", JSEncode.string model.password )
+            ]
+    in
+        list |> JSEncode.object
+
+
+login : Model -> Cmd Msg
+login model =
+    Task.perform
+        LoginFailed
+        LoginSucceeded
+        ((Http.send
+            Http.defaultSettings
+            { verb = "POST"
+            , headers = [ ( "Content-Type", "application/json" ) ]
+            , url = "http://localhost:4003/login"
+            , body = model |> encodeModel |> JSEncode.encode 0 |> Http.string
+            }
+         )
+            |> Http.fromJson JSDecode.string
+        )
+
+
+
+-- Subscriptions
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
 
 
 
