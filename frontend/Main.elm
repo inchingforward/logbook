@@ -27,6 +27,7 @@ main =
 type alias Model =
     { username : String
     , password : String
+    , serverResult : String
     }
 
 
@@ -34,12 +35,13 @@ model : Model
 model =
     { username = ""
     , password = ""
+    , serverResult = ""
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { username = "", password = "" }, Cmd.none )
+    ( { username = "", password = "", serverResult = "" }, Cmd.none )
 
 
 
@@ -66,11 +68,11 @@ update msg model =
         Login ->
             ( model, login model )
 
-        LoginSucceeded _ ->
-            ( model, Cmd.none )
+        LoginSucceeded result ->
+            ( { model | serverResult = result }, Cmd.none )
 
-        LoginFailed _ ->
-            ( model, Cmd.none )
+        LoginFailed error ->
+            ( { model | serverResult = toString error }, Cmd.none )
 
 
 encodeModel : Model -> JSEncode.Value
@@ -121,5 +123,6 @@ view model =
         , input [ type' "text", placeholder "Username", onInput ChangeUsername ] []
         , input [ type' "password", placeholder "Password", onInput ChangePassword ] []
         , div [] [ text ("User: " ++ model.username ++ " Password: " ++ model.password) ]
+        , div [] [ text model.serverResult ]
         , button [ onClick Login ] [ text "Login" ]
         ]
