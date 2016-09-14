@@ -5,7 +5,7 @@ import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
-import Json.Decode as JSDecode
+import Json.Decode exposing (..)
 import Json.Encode as JSEncode
 import Task
 
@@ -31,6 +31,13 @@ type alias Model =
     }
 
 
+type alias LoginResult =
+    { success : Bool
+    , message : String
+    , token : String
+    }
+
+
 model : Model
 model =
     { username = ""
@@ -52,7 +59,7 @@ type Msg
     = ChangeUsername String
     | ChangePassword String
     | Login
-    | LoginSucceeded String
+    | LoginSucceeded LoginResult
     | LoginFailed Http.Error
 
 
@@ -69,7 +76,7 @@ update msg model =
             ( model, login model )
 
         LoginSucceeded result ->
-            ( { model | serverResult = result }, Cmd.none )
+            ( { model | serverResult = "Logged in!" }, Cmd.none )
 
         LoginFailed error ->
             ( { model | serverResult = toString error }, Cmd.none )
@@ -86,6 +93,14 @@ encodeModel model =
         list |> JSEncode.object
 
 
+decodeLoginResult : Decoder LoginResult
+decodeLoginResult =
+    object3 LoginResult
+        ("success" := bool)
+        ("message" := string)
+        ("token" := string)
+
+
 login : Model -> Cmd Msg
 login model =
     Task.perform
@@ -99,7 +114,7 @@ login model =
             , body = model |> encodeModel |> JSEncode.encode 0 |> Http.string
             }
          )
-            |> Http.fromJson JSDecode.string
+            |> Http.fromJson decodeLoginResult
         )
 
 

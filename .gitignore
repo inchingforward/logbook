@@ -24,4 +24,5 @@ _testmain.go
 *.prof
 
 elm-stuff
-main.html
+frontend/main.html
+frontend/index.html
