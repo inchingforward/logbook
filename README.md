@@ -1,9 +1,8 @@
 # Logbook
 
-Keep track of sites you've visited or notes you want to save for later.
+Keep track of sites you've visited, save quick notes or todos.
 
 ## Why?
 
-- Scratching yet another web app itch.
-- Exploring REST backend development with [Go](http://golang.org)
-- Exploring frontend development with [Elm](http://elm-lang.org)
+- To scratch yet another web app itch.
+- To explore the [Buffalo](http://gobuffalo.io) web framework.
