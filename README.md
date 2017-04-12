@@ -1,6 +1,6 @@
 # Logbook
 
-Keep track of sites you've visited, save quick notes or todos.
+Keep track of sites you've visited, save quick notes, todos, stuff you did, or anything.
 
 ## Why?
 
