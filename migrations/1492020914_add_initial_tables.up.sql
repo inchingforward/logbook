@@ -3,7 +3,7 @@ create table logbook_user (
     username text not null,
     password text not null,
     display_name text not null,
-    active boolean default true,
+    active boolean default true not null,
     created_at timestamp with time zone default now() not null,
     last_login_at timestamp with time zone
 );
