@@ -16,12 +16,24 @@ func notYetImplemented(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusNotImplemented)
 }
 
+func renderStaticTemplate(c echo.Context, templateName string) error {
+	return c.Render(http.StatusOK, templateName, nil)
+}
+
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
 func index(c echo.Context) error {
-	return c.Render(http.StatusOK, "index.html", nil)
+	return renderStaticTemplate(c, "index.html")
+}
+
+func about(c echo.Context) error {
+	return renderStaticTemplate(c, "about.html")
+}
+
+func contact(c echo.Context) error {
+	return renderStaticTemplate(c, "contact.html")
 }
 
 func main() {
@@ -34,8 +46,8 @@ func main() {
 	e.Renderer = t
 	e.Static("/static", "static")
 	e.GET("/", index)
-	e.GET("/about", notYetImplemented)
-	e.GET("/contact", notYetImplemented)
+	e.GET("/about", about)
+	e.GET("/contact", contact)
 	e.GET("/login", notYetImplemented)
 	e.POST("/login", notYetImplemented)
 	e.POST("/logout", notYetImplemented)
