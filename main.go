@@ -13,6 +13,7 @@ func notYetImplemented(c echo.Context) error {
 func main() {
 	e := echo.New()
 
+	e.Static("/static", "static")
 	e.GET("/", notYetImplemented)
 	e.GET("/about", notYetImplemented)
 	e.GET("/contact", notYetImplemented)
