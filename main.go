@@ -1,20 +1,39 @@
 package main
 
 import (
+	"html/template"
+	"io"
 	"net/http"
 
 	"github.com/labstack/echo"
 )
 
+type Template struct {
+	templates *template.Template
+}
+
 func notYetImplemented(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusNotImplemented)
+}
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
+}
+
+func index(c echo.Context) error {
+	return c.Render(http.StatusOK, "index.html", nil)
 }
 
 func main() {
 	e := echo.New()
 
+	t := &Template{
+		templates: template.Must(template.ParseGlob("templates/*.html")),
+	}
+
+	e.Renderer = t
 	e.Static("/static", "static")
-	e.GET("/", notYetImplemented)
+	e.GET("/", index)
 	e.GET("/about", notYetImplemented)
 	e.GET("/contact", notYetImplemented)
 	e.GET("/login", notYetImplemented)
