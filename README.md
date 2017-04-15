@@ -1,6 +1,8 @@
 # Logbook
 
-Keep track of sites you've visited, save quick notes, todos, stuff you did, or anything.
+Keep track of things.
+
+The site is a work in progress, but feel free to [visit](http://logbook.mikejanger.net).
 
 ## Why?
 
