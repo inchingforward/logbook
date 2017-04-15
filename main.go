@@ -1,8 +1,10 @@
 package main
 
 import (
+	"flag"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -11,6 +13,10 @@ import (
 type Template struct {
 	templates *template.Template
 }
+
+var (
+	debug = false
+)
 
 func notYetImplemented(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusNotImplemented)
@@ -37,6 +43,11 @@ func contact(c echo.Context) error {
 }
 
 func main() {
+	flag.BoolVar(&debug, "debug", false, "true to enable debug")
+	flag.Parse()
+
+	log.Printf("debug: %v", debug)
+
 	e := echo.New()
 
 	t := &Template{
