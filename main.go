@@ -27,6 +27,10 @@ func renderStaticTemplate(c echo.Context, templateName string) error {
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	if debug {
+		t.templates = template.Must(template.ParseGlob("templates/*.html"))
+	}
+
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
@@ -46,7 +50,7 @@ func main() {
 	flag.BoolVar(&debug, "debug", false, "true to enable debug")
 	flag.Parse()
 
-	log.Printf("debug: %v", debug)
+	log.Printf("debug: %v\n", debug)
 
 	e := echo.New()
 
