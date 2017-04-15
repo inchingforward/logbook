@@ -76,5 +76,5 @@ func main() {
 	e.GET("/users/:username/logbook", notYetImplemented)
 	e.GET("/users/:username/logbook/:uuid", notYetImplemented)
 
-	e.Logger.Fatal(e.Start(":8000"))
+	e.Logger.Fatal(e.Start(":8006"))
 }
