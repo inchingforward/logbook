@@ -1,1 +1,12 @@
-html { font-family: Georgia, 'Times New Roman', Times, serif}
+html { 
+    font-family: Georgia, 'Times New Roman', Times, serif; 
+    padding: 10px;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
