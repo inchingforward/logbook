@@ -1,5 +1,5 @@
 create table logbook_user (
-    id bigserial not null,
+    id bigserial primary key,
     uuid text not null,
     username text not null,
     password text not null,
@@ -10,7 +10,7 @@ create table logbook_user (
 );
 
 create table logbook_entry (
-    id bigserial not null,
+    id bigserial primary key,
     uuid text not null,
     title text not null,
     url text,
