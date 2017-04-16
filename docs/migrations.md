@@ -4,7 +4,7 @@ Migrations are done using [migrate](https://github.com/mattes/migrate).
 
 ## Installation
 
-    go get -u github.com/mattes/migrate`
+    go get -u github.com/mattes/migrate
 
 ## Creating a new migration
 
