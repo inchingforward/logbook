@@ -6,7 +6,7 @@
 {{range .Logbook}}
     <article>
         <h1><a href="{{.URL}}">{{.Title}}</a></h1>
-        <p>{{.Notes}}</p>
+        <p>{{.Notes|mdb}}</p>
         <h2>{{.Tags}}</h2>
     </article>
 {{end}}
