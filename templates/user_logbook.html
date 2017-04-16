@@ -1,0 +1,9 @@
+{{ template "layout_header.html" }}
+
+<h2>{{.User}}'s Logbook</h2>
+
+{{range .Logbook}}
+    <p>{{.Title}}</p>
+{{end}}
+
+{{ template "layout_footer.html" }}

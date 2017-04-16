@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/jmoiron/sqlx"
+)
 
 // A User may log in to the site and create Entry records.
 type User struct {
@@ -26,4 +30,29 @@ type Entry struct {
 	CreatedAt time.Time `db:"created_at"`
 	UpdatedAt time.Time `db:"updated_at"`
 	Tags      string    `db:"tags"`
+}
+
+var (
+	db *sqlx.DB
+)
+
+// SetDB sets the database connection.
+func SetDB(adb *sqlx.DB) {
+	db = adb
+}
+
+// GetUserLogbook returns an active user's public bookmarks.
+func GetUserLogbook(username string) ([]*Entry, error) {
+	var entries []*Entry
+
+	err := db.Select(&entries, `
+		select   le.* 
+		from     logbook_entry le 
+		         inner join logbook_user lu on (le.user_id = lu.id)
+		where    lu.username = $1 
+		and      le.private = false
+		and      lu.active = true
+		order by le.created_at desc`, username)
+
+	return entries, err
 }
