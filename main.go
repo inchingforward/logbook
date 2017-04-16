@@ -71,7 +71,7 @@ func getUserLogbook(c echo.Context) error {
 }
 
 func init() {
-	db, err := sqlx.Connect("postgres", "dbname=logbook sslmode=disable")
+	db, err := sqlx.Connect("postgres", "user=postgres dbname=logbook sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
