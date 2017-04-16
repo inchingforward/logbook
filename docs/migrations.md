@@ -10,10 +10,10 @@ Migrations are done using [migrate](https://github.com/mattes/migrate).
 
 From the project's root directory:
 
-    migrate -url postgresql:/localhost:5432/logbook -path ./migrations create migration_name
+    migrate -url postgresql://localhost:5432/logbook?sslmode=disable -path ./migrations create migration_name
 
 ## Migrating
 
 From the project's root directory:
 
-    migrate -url postgresql:/localhost:5432/logbook -path ./migrations up
+    migrate -url postgresql://localhost:5432/logbook?sslmode=disable -path ./migrations up
