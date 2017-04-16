@@ -2,8 +2,14 @@
 
 <h2>{{.User}}'s Logbook</h2>
 
+<section>
 {{range .Logbook}}
-    <p>{{.Title}}</p>
+    <article>
+        <h1><a href="{{.URL}}">{{.Title}}</a></h1>
+        <p>{{.Notes}}</p>
+        <h2>{{.Tags}}</h2>
+    </article>
 {{end}}
+</section>
 
 {{ template "layout_footer.html" }}
