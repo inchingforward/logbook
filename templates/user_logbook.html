@@ -1,15 +1,15 @@
-{{ template "layout_header.html" }}
+{% extends "layout.html" %}
 
-<h2>{{.User}}'s Logbook</h2>
+{% block content %}
+<h2>{{ username }}'s Logbook</h2>
 
 <section>
-{{range .Logbook}}
+{% for entry in logbook %}
     <article>
-        <h1><a href="{{.URL}}">{{.Title}}</a></h1>
-        <p>{{.Notes|mdb}}</p>
-        <h2>{{.Tags}}</h2>
+        <h1><a href="{{ entry.URL }}">{{entry.Title}}</a></h1>
+        {{ entry.Notes|markdown }}
+        <h2>{{ entry.Tags }}</h2>
     </article>
-{{end}}
+{% endfor %}
 </section>
-
-{{ template "layout_footer.html" }}
+{% endblock %}

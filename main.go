@@ -4,10 +4,11 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
-	"io"
 	"log"
 	"net/http"
 
+	"github.com/echo-contrib/pongor"
+	_ "github.com/flosch/pongo2-addons"
 	"github.com/inchingforward/logbook/models"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
@@ -33,14 +34,6 @@ func renderStaticTemplate(c echo.Context, templateName string) error {
 	return c.Render(http.StatusOK, templateName, nil)
 }
 
-func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	if debug {
-		t.templates = template.Must(template.New("main").Funcs(funcMap).ParseGlob("templates/*.html"))
-	}
-
-	return t.templates.ExecuteTemplate(w, name, data)
-}
-
 func index(c echo.Context) error {
 	return renderStaticTemplate(c, "index.html")
 }
@@ -61,11 +54,7 @@ func getUserLogbook(c echo.Context) error {
 		log.Printf("Error getting user logbook: %v\n", err)
 		return c.Render(http.StatusOK, "error.html", err.Error())
 	}
-
-	err = c.Render(http.StatusOK, "user_logbook.html", struct {
-		Logbook []*models.Entry
-		User    string
-	}{logbook, username})
+	err = c.Render(http.StatusOK, "user_logbook.html", map[string]interface{}{"logbook": logbook, "username": username})
 	if err != nil {
 		err = c.Render(http.StatusOK, "error.html", err.Error())
 	}
@@ -101,11 +90,14 @@ func main() {
 
 	e.Use(middleware.Logger())
 
-	t := &Template{
+	/*t := &Template{
 		templates: template.Must(template.New("main").Funcs(funcMap).ParseGlob("templates/*.html")),
-	}
+	}*/
+	e.Renderer = pongor.GetRenderer(pongor.PongorOption{
+		Reload: debug,
+	})
 
-	e.Renderer = t
+	//e.Renderer = t
 	e.Static("/static", "static")
 	e.GET("/", index)
 	e.GET("/about", about)
