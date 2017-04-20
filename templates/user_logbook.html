@@ -9,6 +9,7 @@
         <h1><a href="{{ entry.URL }}">{{entry.Title}}</a></h1>
         {{ entry.Notes|markdown }}
         <h2>{{ entry.Tags }}</h2>
+        <h3>{{ entry.CreatedAt|timesince }}</h3>
     </article>
 {% endfor %}
 </section>

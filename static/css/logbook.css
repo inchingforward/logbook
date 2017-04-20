@@ -12,6 +12,7 @@ section { padding-top: 20px; }
 article { padding-bottom: 20px; }
 article h1 { font-size: 1.2rem; }
 article h2 { font-size: 0.8rem; padding-top: 3px;}
+article h3 { font-size: 0.7rem;}
 article p { padding-top: 5px; }
 
 nav { font-size: 1.5em; padding-bottom: 20px; }
