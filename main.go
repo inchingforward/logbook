@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 
+	"strconv"
+
 	"github.com/echo-contrib/pongor"
 	_ "github.com/flosch/pongo2-addons"
 	"github.com/inchingforward/logbook/models"
@@ -20,6 +22,14 @@ import (
 type Template struct {
 	templates *template.Template
 }
+
+type paginator struct {
+	entriesPerPage, offset, nextOffset, prevOffset int
+}
+
+const (
+	entriesPerPage = 20
+)
 
 var (
 	debug   = false
@@ -46,15 +56,34 @@ func contact(c echo.Context) error {
 	return renderStaticTemplate(c, "contact.html")
 }
 
+func makePaginator(c echo.Context) paginator {
+	offsetParam := c.QueryParam("offset")
+	offset, error := strconv.Atoi(offsetParam)
+
+	if error != nil {
+		offset = 0
+	}
+
+	nextOffset := offset + entriesPerPage
+	prevOffset := offset - entriesPerPage
+
+	if prevOffset < 0 {
+		prevOffset = 0
+	}
+
+	return paginator{entriesPerPage, offset, nextOffset, prevOffset}
+}
+
 func getUserLogbook(c echo.Context) error {
 	username := c.Param("username")
+	pag := makePaginator(c)
 
-	logbook, err := models.GetUserLogbook(username)
+	logbook, err := models.GetUserLogbook(username, pag.offset, pag.entriesPerPage)
 	if err != nil {
 		log.Printf("Error getting user logbook: %v\n", err)
 		return c.Render(http.StatusOK, "error.html", err.Error())
 	}
-	err = c.Render(http.StatusOK, "user_logbook.html", map[string]interface{}{"logbook": logbook, "username": username})
+	err = c.Render(http.StatusOK, "user_logbook.html", map[string]interface{}{"logbook": logbook, "username": username, "paginator": pag})
 	if err != nil {
 		err = c.Render(http.StatusOK, "error.html", err.Error())
 	}

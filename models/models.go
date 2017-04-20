@@ -42,7 +42,7 @@ func SetDB(adb *sqlx.DB) {
 }
 
 // GetUserLogbook returns an active user's public bookmarks.
-func GetUserLogbook(username string) ([]*Entry, error) {
+func GetUserLogbook(username string, offset int, limit int) ([]*Entry, error) {
 	var entries []*Entry
 
 	err := db.Select(&entries, `
@@ -52,7 +52,9 @@ func GetUserLogbook(username string) ([]*Entry, error) {
 		where    lu.username = $1 
 		and      le.private = false
 		and      lu.active = true
-		order by le.created_at desc`, username)
+		order by le.created_at desc
+		limit $2
+		offset $3`, username, limit, offset)
 
 	return entries, err
 }
