@@ -14,10 +14,12 @@
 {% endfor %}
 </section>
 
-{% if paginator.offset != 0 %}
-<a href="/users/{{ username }}/logbook?offset={{ paginator.prevOffset }}">Prev</a>
+{% if paginator.page == 2 %}
+<a href="/users/{{ username }}/logbook">Prev</a>
+{% elif paginator.page > 1 %}
+<a href="/users/{{ username }}/logbook?page={{ paginator.prevPage }}">Prev</a>
 {% endif %}
 {% if logbook|length == paginator.entriesPerPage  %}
-<a href="/users/{{ username }}/logbook?offset={{ paginator.nextOffset }}">Next</a>
+<a href="/users/{{ username }}/logbook?page={{ paginator.nextPage }}">Next</a>
 {% endif %}
 {% endblock %}

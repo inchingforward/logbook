@@ -24,7 +24,7 @@ type Template struct {
 }
 
 type paginator struct {
-	entriesPerPage, offset, nextOffset, prevOffset int
+	entriesPerPage, offset, page, prevPage, nextPage int
 }
 
 const (
@@ -57,21 +57,23 @@ func contact(c echo.Context) error {
 }
 
 func makePaginator(c echo.Context) paginator {
-	offsetParam := c.QueryParam("offset")
-	offset, error := strconv.Atoi(offsetParam)
+	pageParam := c.QueryParam("page")
+	page, error := strconv.Atoi(pageParam)
 
 	if error != nil {
-		offset = 0
+		page = 1
 	}
 
-	nextOffset := offset + entriesPerPage
-	prevOffset := offset - entriesPerPage
+	nextPage := page + 1
+	prevPage := page - 1
 
-	if prevOffset < 0 {
-		prevOffset = 0
+	offset := (page - 1) * entriesPerPage
+
+	if prevPage < 0 {
+		prevPage = 0
 	}
 
-	return paginator{entriesPerPage, offset, nextOffset, prevOffset}
+	return paginator{entriesPerPage, offset, page, prevPage, nextPage}
 }
 
 func getUserLogbook(c echo.Context) error {
