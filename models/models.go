@@ -1,6 +1,7 @@
 package models
 
 import (
+	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -30,6 +31,11 @@ type Entry struct {
 	CreatedAt time.Time `db:"created_at"`
 	UpdatedAt time.Time `db:"updated_at"`
 	Tags      string    `db:"tags"`
+}
+
+// TagList splits the tags string into a slice of strings.
+func (e *Entry) TagList() []string {
+	return strings.Split(e.Tags, ",")
 }
 
 var (
