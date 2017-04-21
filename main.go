@@ -2,8 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 
@@ -16,12 +14,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	_ "github.com/lib/pq"
-	"github.com/russross/blackfriday"
 )
-
-type Template struct {
-	templates *template.Template
-}
 
 type paginator struct {
 	entriesPerPage, offset, page, prevPage, nextPage int
@@ -32,8 +25,7 @@ const (
 )
 
 var (
-	debug   = false
-	funcMap template.FuncMap
+	debug = false
 )
 
 func notYetImplemented(c echo.Context) error {
@@ -93,11 +85,6 @@ func getUserLogbook(c echo.Context) error {
 	return err
 }
 
-func markDownBasic(args ...interface{}) template.HTML {
-	s := blackfriday.MarkdownBasic([]byte(fmt.Sprintf("%s", args...)))
-	return template.HTML(s)
-}
-
 func init() {
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=logbook sslmode=disable")
 	if err != nil {
@@ -105,10 +92,6 @@ func init() {
 	}
 
 	models.SetDB(db)
-
-	funcMap = template.FuncMap{
-		"mdb": markDownBasic,
-	}
 }
 
 func main() {
@@ -121,9 +104,6 @@ func main() {
 
 	e.Use(middleware.Logger())
 
-	/*t := &Template{
-		templates: template.Must(template.New("main").Funcs(funcMap).ParseGlob("templates/*.html")),
-	}*/
 	e.Renderer = pongor.GetRenderer(pongor.PongorOption{
 		Reload: debug,
 	})
