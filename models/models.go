@@ -1,10 +1,10 @@
 package models
 
 import (
-	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 )
 
 // A User may log in to the site and create Entry records.
@@ -21,21 +21,16 @@ type User struct {
 
 // An Entry is a URL and/or Notes.
 type Entry struct {
-	ID        uint64    `db:"id"`
-	UUID      string    `db:"uuid"`
-	Title     string    `db:"title"`
-	URL       string    `db:"url"`
-	Notes     string    `db:"notes"`
-	Private   bool      `db:"private"`
-	UserID    uint64    `db:"user_id"`
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
-	Tags      string    `db:"tags"`
-}
-
-// TagList splits the tags string into a slice of strings.
-func (e *Entry) TagList() []string {
-	return strings.Split(e.Tags, ",")
+	ID        uint64         `db:"id"`
+	UUID      string         `db:"uuid"`
+	Title     string         `db:"title"`
+	URL       string         `db:"url"`
+	Notes     string         `db:"notes"`
+	Private   bool           `db:"private"`
+	UserID    uint64         `db:"user_id"`
+	CreatedAt time.Time      `db:"created_at"`
+	UpdatedAt time.Time      `db:"updated_at"`
+	Tags      pq.StringArray `db:"tags"`
 }
 
 var (

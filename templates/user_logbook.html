@@ -9,9 +9,10 @@
         <h1><a href="{{ entry.URL }}">{{entry.Title}}</a></h1>
         {{ entry.Notes|markdown }}
         <h2>
-        {% for tag in entry.TagList() %}
-        <a href="#">{{ tag }}</a>
-        {% endfor %}
+            {% for tag in entry.Tags %}
+            <a href="#">{{ tag }}</a>
+            {% endfor %}
+        {{ entry.Tags }}
         </h2>
 
         <h3>{{ entry.CreatedAt|timesince }}</h3>
