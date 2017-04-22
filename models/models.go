@@ -42,20 +42,40 @@ func SetDB(adb *sqlx.DB) {
 	db = adb
 }
 
+var getUserLogbookSQL = `
+	select   le.* 
+	from     logbook_entry le 
+				inner join logbook_user lu on (le.user_id = lu.id)
+	where    lu.username = $1 
+	and      le.private = false
+	and      lu.active = true
+	order by le.created_at desc
+	limit $2
+	offset $3
+`
+
+var getUserLogbookWithTagSQL = `
+	select   le.* 
+	from     logbook_entry le 
+				inner join logbook_user lu on (le.user_id = lu.id)
+	where    lu.username = $1
+	and      $2 = any(le.tags) 
+	and      le.private = false
+	and      lu.active = true
+	order by le.created_at desc
+	limit $3
+	offset $4
+`
+
 // GetUserLogbook returns an active user's public bookmarks.
-func GetUserLogbook(username string, offset int, limit int) ([]*Entry, error) {
+func GetUserLogbook(username string, tag string, offset int, limit int) ([]*Entry, error) {
 	var entries []*Entry
 
-	err := db.Select(&entries, `
-		select   le.* 
-		from     logbook_entry le 
-		         inner join logbook_user lu on (le.user_id = lu.id)
-		where    lu.username = $1 
-		and      le.private = false
-		and      lu.active = true
-		order by le.created_at desc
-		limit $2
-		offset $3`, username, limit, offset)
+	if tag != "" {
+		err := db.Select(&entries, getUserLogbookWithTagSQL, username, tag, limit, offset)
+		return entries, err
+	}
 
+	err := db.Select(&entries, getUserLogbookSQL, username, limit, offset)
 	return entries, err
 }

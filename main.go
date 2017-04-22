@@ -67,13 +67,14 @@ func makePaginator(c echo.Context) paginator {
 func getUserLogbook(c echo.Context) error {
 	username := c.Param("username")
 	pag := makePaginator(c)
+	tag := c.QueryParam("tag")
 
-	logbook, err := models.GetUserLogbook(username, pag.offset, pag.entriesPerPage)
+	logbook, err := models.GetUserLogbook(username, tag, pag.offset, pag.entriesPerPage)
 	if err != nil {
 		log.Printf("Error getting user logbook: %v\n", err)
 		return c.Render(http.StatusOK, "error.html", err.Error())
 	}
-	err = c.Render(http.StatusOK, "user_logbook.html", map[string]interface{}{"logbook": logbook, "username": username, "paginator": pag})
+	err = c.Render(http.StatusOK, "user_logbook.html", map[string]interface{}{"logbook": logbook, "username": username, "paginator": pag, "tag": tag})
 	if err != nil {
 		err = c.Render(http.StatusOK, "error.html", err.Error())
 	}

@@ -2,6 +2,9 @@
 
 {% block content %}
 <h2>{{ username }}'s Logbook</h2>
+{% if tag %}
+<p>Tag: {{ tag }}</p>
+{% endif %}
 
 <section>
 {% for entry in logbook %}
@@ -10,7 +13,7 @@
         {{ entry.Notes|markdown }}
         <h2>
             {% for tag in entry.Tags %}
-            <a href="#">{{ tag }}</a>
+            <a href="/users/{{ username }}/logbook?tag={{ tag }}">{{ tag }}</a>
             {% endfor %}
         {{ entry.Tags }}
         </h2>
@@ -21,11 +24,11 @@
 </section>
 
 {% if paginator.page == 2 %}
-<a href="/users/{{ username }}/logbook">Prev</a>
+<a href="/users/{{ username }}/logbook{% if tag %}?tag={{ tag }}{% endif %}">Prev</a>
 {% elif paginator.page > 1 %}
-<a href="/users/{{ username }}/logbook?page={{ paginator.prevPage }}">Prev</a>
+<a href="/users/{{ username }}/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.prevPage }}">Prev</a>
 {% endif %}
 {% if logbook|length == paginator.entriesPerPage  %}
-<a href="/users/{{ username }}/logbook?page={{ paginator.nextPage }}">Next</a>
+<a href="/users/{{ username }}/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.nextPage }}">Next</a>
 {% endif %}
 {% endblock %}
