@@ -5,7 +5,7 @@ html {
 
 h1 { font-size: 2rem; }
 h2 { font-size: 1.5rem; }
-p { padding-top: 10px; }
+p { line-height: 1.2rem; }
 
 a { text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -13,10 +13,10 @@ a:hover { text-decoration: underline; }
 section { padding-top: 20px; }
 
 article { padding-bottom: 20px; }
-article h1 { font-size: 1.2rem; }
+article h1 { font-size: 1.25rem; }
 article h2 { font-size: 0.8rem; padding-top: 3px; }
 article h2 a { color: #777; padding-right: 2px; }
-article h3 { font-size: 0.7rem; padding-top: 3px; color: #ccc; }
-article p { padding-top: 5px; }
+article h3 { font-size: 0.7rem; padding-top: 4px; color: #ccc; }
+article p { padding-top: 3px; }
 
 nav { font-size: 1.5em; padding-bottom: 20px; }
