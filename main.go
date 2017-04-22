@@ -44,10 +44,6 @@ func about(c echo.Context) error {
 	return renderStaticTemplate(c, "about.html")
 }
 
-func contact(c echo.Context) error {
-	return renderStaticTemplate(c, "contact.html")
-}
-
 func makePaginator(c echo.Context) paginator {
 	pageParam := c.QueryParam("page")
 	page, error := strconv.Atoi(pageParam)
@@ -112,7 +108,6 @@ func main() {
 	e.Static("/static", "static")
 	e.GET("/", index)
 	e.GET("/about", about)
-	e.GET("/contact", contact)
 	e.GET("/login", notYetImplemented)
 	e.POST("/login", notYetImplemented)
 	e.POST("/logout", notYetImplemented)
