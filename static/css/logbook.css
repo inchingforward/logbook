@@ -86,3 +86,6 @@ article p { padding-top: 3px; padding-bottom: 3px; }
 article p:last-of-type { padding-bottom: 0; }
 
 #pagination a { padding-right: 20px; }
+
+#tagInfo p { padding-top: 3px; }
+#tagInfo a { font-size: 0.75rem; color: #777; padding-left: 3px;}

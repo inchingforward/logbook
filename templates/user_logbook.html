@@ -1,10 +1,12 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>{{ username }}'s Logbook</h2>
-{% if tag %}
-<p>Tag: {{ tag }}</p>
-{% endif %}
+<div id="tagInfo">
+    <h2>{{ username }}'s Logbook</h2>
+    {% if tag %}
+    <p>Tag: {{ tag }} <a href="/users/{{ username }}/logbook">remove</a></p>
+    {% endif %}
+</div>
 
 <section>
 {% for entry in logbook %}
