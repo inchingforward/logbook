@@ -89,3 +89,5 @@ article p:last-of-type { padding-bottom: 0; }
 
 #tagInfo p { padding-top: 3px; }
 #tagInfo a { font-size: 0.75rem; color: #777; padding-left: 3px;}
+
+#login input { display: block; margin-bottom: 5px; }

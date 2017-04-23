@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form id="login" method="post" action="/login">
+
+<input type="text" id="username" name="username" placeholder="Username" />
+<input type="password" id="password" name="password" placeholder="Password" />
+<input type="submit" value="Login" />
+
+</form>
+
+<script>
+    window.onload = function() {
+        document.getElementById("username").focus();
+    }
+</script>
+{% endblock %}

@@ -44,6 +44,18 @@ func about(c echo.Context) error {
 	return renderStaticTemplate(c, "about.html")
 }
 
+func getLogin(c echo.Context) error {
+	return renderStaticTemplate(c, "login.html")
+}
+
+func login(c echo.Context) error {
+	username := c.FormValue("username")
+
+	log.Printf("login for '%v'", username)
+
+	return echo.NewHTTPError(http.StatusNotImplemented)
+}
+
 func makePaginator(c echo.Context) paginator {
 	pageParam := c.QueryParam("page")
 	page, error := strconv.Atoi(pageParam)
@@ -105,12 +117,11 @@ func main() {
 		Reload: debug,
 	})
 
-	//e.Renderer = t
 	e.Static("/static", "static")
 	e.GET("/", index)
 	e.GET("/about", about)
-	e.GET("/login", notYetImplemented)
-	e.POST("/login", notYetImplemented)
+	e.GET("/login", getLogin)
+	e.POST("/login", login)
 	e.POST("/logout", notYetImplemented)
 	e.GET("/logbook", notYetImplemented)
 	e.GET("/logbook/add", notYetImplemented)
