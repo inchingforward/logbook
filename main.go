@@ -50,10 +50,27 @@ func getLogin(c echo.Context) error {
 
 func login(c echo.Context) error {
 	username := c.FormValue("username")
+	password := c.FormValue("password")
+
+	if username == "" || password == "" {
+		return c.Render(http.StatusOK, "login.html", map[string]interface{}{
+			"message":  "Username and Password are required.",
+			"username": username,
+			"password": password,
+		})
+	}
 
 	log.Printf("login for '%v'", username)
+	user, err := models.Login(username, password)
+	if err != nil {
+		return c.Render(http.StatusBadRequest, "login.html", map[string]interface{}{
+			"message":  err.Error(),
+			"username": username,
+			"password": password,
+		})
+	}
 
-	return echo.NewHTTPError(http.StatusNotImplemented)
+	return c.Render(http.StatusOK, "login.html", map[string]interface{}{"message": "Logged in.", "user": user})
 }
 
 func makePaginator(c echo.Context) paginator {

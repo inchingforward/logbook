@@ -5,18 +5,19 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // A User may log in to the site and create Entry records.
 type User struct {
-	ID          uint64    `db:"id"`
-	UUID        string    `db:"uuid"`
-	UserName    string    `db:"username"`
-	Password    string    `db:"password"`
-	DisplayName string    `db:"display_name"`
-	Active      bool      `db:"active"`
-	CreatedAt   time.Time `db:"created_at"`
-	LastLoginAt time.Time `db:"last_login_at"`
+	ID          uint64      `db:"id"`
+	UUID        string      `db:"uuid"`
+	UserName    string      `db:"username"`
+	Password    string      `db:"password"`
+	DisplayName string      `db:"display_name"`
+	Active      bool        `db:"active"`
+	CreatedAt   time.Time   `db:"created_at"`
+	LastLoginAt pq.NullTime `db:"last_login_at"`
 }
 
 // An Entry is a URL and/or Notes.
@@ -78,4 +79,21 @@ func GetUserLogbook(username string, tag string, offset int, limit int) ([]*Entr
 
 	err := db.Select(&entries, getUserLogbookSQL, username, limit, offset)
 	return entries, err
+}
+
+// Login returns a User if the username and password match an existing user.
+func Login(username string, password string) (User, error) {
+	var user User
+
+	err := db.Get(&user, "select * from logbook_user where username = $1", username)
+	if err != nil {
+		return user, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return user, err
+	}
+
+	return user, err
 }
