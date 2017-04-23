@@ -57,9 +57,7 @@ html {
 }
 
 @media screen and (max-width: 780px) {
-    html  {
-        padding-left: 25px;
-    }
+    html  { padding-left: 25px; }
 }
 
 h1 { font-size: 2rem; }
@@ -71,6 +69,10 @@ a:hover { text-decoration: underline; }
 
 nav { font-size: 1.5em; padding-bottom: 20px; }
 nav .actions { display: inline; position: absolute; right: 0; padding-right: 50px; }
+
+@media screen and (max-width: 780px) {
+    nav .actions { display: inline; position: absolute; right: 0; padding-right: 25px; }
+}
 
 section { padding-top: 20px; }
 
