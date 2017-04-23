@@ -50,11 +50,16 @@ table {
 /* logbook styles */
 
 html { 
-    /*font-family: Georgia, 'Times New Roman', Times, serif; */
     font-family: "Helvetica Neue", "Helvetica", "Liberation Sans", "Arial", sans-serif;
     font-weight: 300;
     padding: 10px;
     padding-left: 50px;
+}
+
+@media screen and (max-width: 780px) {
+    html  {
+        padding-left: 25px;
+    }
 }
 
 h1 { font-size: 2rem; }
