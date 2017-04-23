@@ -34,5 +34,5 @@
 {% if logbook|length == paginator.entriesPerPage  %}
 <a href="/users/{{ username }}/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.nextPage }}">Next</a>
 {% endif %}
-{% endblock %}
 </div>
+{% endblock %}
