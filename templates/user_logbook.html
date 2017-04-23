@@ -23,6 +23,7 @@
 {% endfor %}
 </section>
 
+<div id="pagination">
 {% if paginator.page == 2 %}
 <a href="/users/{{ username }}/logbook{% if tag %}?tag={{ tag }}{% endif %}">Prev</a>
 {% elif paginator.page > 1 %}
@@ -32,3 +33,4 @@
 <a href="/users/{{ username }}/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.nextPage }}">Next</a>
 {% endif %}
 {% endblock %}
+</div>
