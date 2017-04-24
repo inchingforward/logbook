@@ -53,7 +53,7 @@ func login(c echo.Context) error {
 	password := c.FormValue("password")
 
 	if username == "" || password == "" {
-		return c.Render(http.StatusOK, "login.html", map[string]interface{}{
+		return c.Render(http.StatusBadRequest, "login.html", map[string]interface{}{
 			"message":  "Username and Password are required.",
 			"username": username,
 			"password": password,
