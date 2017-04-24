@@ -4,7 +4,6 @@ import (
 	"flag"
 	"log"
 	"net/http"
-
 	"strconv"
 
 	"github.com/echo-contrib/pongor"
@@ -27,6 +26,12 @@ const (
 var (
 	debug = false
 )
+
+// A SessionUser is stored in a user's session.
+type SessionUser struct {
+	ID       uint64
+	UserName string
+}
 
 func notYetImplemented(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusNotImplemented)
@@ -70,7 +75,9 @@ func login(c echo.Context) error {
 		})
 	}
 
-	return c.Render(http.StatusOK, "login.html", map[string]interface{}{"message": "Logged in.", "user": user})
+	sessUser := SessionUser{user.ID, user.UserName}
+
+	return c.Render(http.StatusOK, "login.html", map[string]interface{}{"message": "Logged in.", "user": sessUser})
 }
 
 func makePaginator(c echo.Context) paginator {
