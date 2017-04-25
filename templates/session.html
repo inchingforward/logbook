@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Session Dump</h2>
+
+{{ session.Values.username }}
+{{ session.Values.userid }}
+
+{% endblock %}

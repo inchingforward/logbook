@@ -8,6 +8,8 @@ import (
 
 	"github.com/echo-contrib/pongor"
 	_ "github.com/flosch/pongo2-addons"
+	"github.com/gorilla/securecookie"
+	"github.com/gorilla/sessions"
 	"github.com/inchingforward/logbook/models"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
@@ -25,6 +27,7 @@ const (
 
 var (
 	debug = false
+	store sessions.Store
 )
 
 // A SessionUser is stored in a user's session.
@@ -53,6 +56,20 @@ func getLogin(c echo.Context) error {
 	return renderStaticTemplate(c, "login.html")
 }
 
+func sessionDump(c echo.Context) error {
+	sess, err := store.Get(c.Request(), "session")
+	if err != nil {
+		log.Printf("%v\n", err)
+		return c.Render(http.StatusOK, "error.html", err.Error())
+	}
+
+	log.Printf("session  get: %v\n", sess)
+
+	return c.Render(http.StatusBadRequest, "session.html", map[string]interface{}{
+		"session": sess,
+	})
+}
+
 func login(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
@@ -76,6 +93,14 @@ func login(c echo.Context) error {
 	}
 
 	sessUser := SessionUser{user.ID, user.UserName}
+	sess, _ := store.Get(c.Request(), "session")
+
+	sess.Values["username"] = user.UserName
+	sess.Values["userid"] = user.ID
+
+	sess.Save(c.Request(), c.Response())
+
+	log.Printf("session save: %v\n", sess)
 
 	return c.Render(http.StatusOK, "login.html", map[string]interface{}{"message": "Logged in.", "user": sessUser})
 }
@@ -125,6 +150,8 @@ func init() {
 	}
 
 	models.SetDB(db)
+
+	store = sessions.NewCookieStore(securecookie.GenerateRandomKey(32))
 }
 
 func main() {
@@ -156,6 +183,7 @@ func main() {
 	e.GET("/users/:username", notYetImplemented)
 	e.GET("/users/:username/logbook", getUserLogbook)
 	e.GET("/users/:username/logbook/:uuid", notYetImplemented)
+	e.GET("/sessiondump", sessionDump)
 
 	e.Logger.Fatal(e.Start(":8006"))
 }
