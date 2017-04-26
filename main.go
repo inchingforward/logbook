@@ -1,14 +1,15 @@
 package main
 
 import (
+	"encoding/gob"
 	"flag"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/echo-contrib/pongor"
 	_ "github.com/flosch/pongo2-addons"
-	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/inchingforward/logbook/models"
 	"github.com/jmoiron/sqlx"
@@ -60,12 +61,13 @@ func sessionDump(c echo.Context) error {
 	sess, err := store.Get(c.Request(), "session")
 	if err != nil {
 		log.Printf("%v\n", err)
-		return c.Render(http.StatusOK, "error.html", err.Error())
+		return c.Redirect(http.StatusFound, "/login")
 	}
 
 	log.Printf("session  get: %v\n", sess)
+	log.Printf("isnew: %v\n", sess.IsNew)
 
-	return c.Render(http.StatusBadRequest, "session.html", map[string]interface{}{
+	return c.Render(http.StatusOK, "session.html", map[string]interface{}{
 		"session": sess,
 	})
 }
@@ -95,14 +97,22 @@ func login(c echo.Context) error {
 	sessUser := SessionUser{user.ID, user.UserName}
 	sess, _ := store.Get(c.Request(), "session")
 
-	sess.Values["username"] = user.UserName
-	sess.Values["userid"] = user.ID
+	sess.Values["User"] = sessUser
 
 	sess.Save(c.Request(), c.Response())
 
 	log.Printf("session save: %v\n", sess)
 
-	return c.Render(http.StatusOK, "login.html", map[string]interface{}{"message": "Logged in.", "user": sessUser})
+	return c.Redirect(http.StatusFound, "/sessiondump")
+}
+
+func logout(c echo.Context) error {
+	sess, _ := store.Get(c.Request(), "session")
+
+	sess.Values["User"] = nil
+	sess.Save(c.Request(), c.Response())
+
+	return c.Redirect(http.StatusFound, "/login")
 }
 
 func makePaginator(c echo.Context) paginator {
@@ -151,7 +161,13 @@ func init() {
 
 	models.SetDB(db)
 
-	store = sessions.NewCookieStore(securecookie.GenerateRandomKey(32))
+	storeKey := os.Getenv("LOGBOOK_STORE_KEY")
+	if storeKey == "" {
+		log.Fatal("The LOGBOOK_STORE_KEY is not set")
+	}
+	store = sessions.NewCookieStore([]byte(storeKey))
+
+	gob.Register(SessionUser{})
 }
 
 func main() {
@@ -173,7 +189,7 @@ func main() {
 	e.GET("/about", about)
 	e.GET("/login", getLogin)
 	e.POST("/login", login)
-	e.POST("/logout", notYetImplemented)
+	e.POST("/logout", logout)
 	e.GET("/logbook", notYetImplemented)
 	e.GET("/logbook/add", notYetImplemented)
 	e.POST("/logbook/add", notYetImplemented)

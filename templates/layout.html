@@ -10,7 +10,13 @@
         <a href="/">Logbook</a>
         <div class="actions">
             <a href="/about">About</a>
+            {% if session.Values.User.ID %}
+            <form id="logoutForm" method="post" action="/logout"><input type="submit" value="Logout" /></form>
+            {% else %}
+            <a href="/login">Login</a>
+            {% endif %}
         </div>
+        
     </nav>
     {% block content %}{% endblock %}
 </body>

@@ -91,3 +91,14 @@ article p:last-of-type { padding-bottom: 0; }
 #tagInfo a { font-size: 0.75rem; color: #777; padding-left: 3px;}
 
 #login input { display: block; margin-bottom: 5px; }
+#logoutForm { display: inline; }
+#logoutForm input { 
+	background: none; 
+	border: 0; 
+	cursor: pointer; 
+	color: #0000ee; 
+	font-size: 100%;
+	font-family: "Helvetica Neue", "Helvetica", "Liberation Sans", "Arial", sans-serif;
+    font-weight: 300;
+}
+#logoutForm input:hover { text-decoration: underline;  }
