@@ -46,7 +46,7 @@ func SetDB(adb *sqlx.DB) {
 var getUserLogbookSQL = `
 	select   le.* 
 	from     logbook_entry le 
-				inner join logbook_user lu on (le.user_id = lu.id)
+			 inner join logbook_user lu on (le.user_id = lu.id)
 	where    lu.username = $1 
 	and      le.private = false
 	and      lu.active = true
@@ -58,7 +58,7 @@ var getUserLogbookSQL = `
 var getUserLogbookWithTagSQL = `
 	select   le.* 
 	from     logbook_entry le 
-				inner join logbook_user lu on (le.user_id = lu.id)
+			 inner join logbook_user lu on (le.user_id = lu.id)
 	where    lu.username = $1
 	and      $2 = any(le.tags) 
 	and      le.private = false
@@ -68,8 +68,32 @@ var getUserLogbookWithTagSQL = `
 	offset $4
 `
 
-// GetUserLogbook returns an active user's public bookmarks.
-func GetUserLogbook(username string, tag string, offset int, limit int) ([]*Entry, error) {
+var getLogbookSQL = `
+	select   le.* 
+	from     logbook_entry le 
+			 inner join logbook_user lu on (le.user_id = lu.id)
+	where    lu.id = $1
+	and      le.private = false
+	and      lu.active = true
+	order by le.created_at desc
+	limit $2
+	offset $3
+`
+
+var getLogbookWithTagSQL = `
+	select   le.* 
+	from     logbook_entry le 
+			 inner join logbook_user lu on (le.user_id = lu.id)
+	where    lu.id = $1
+	and      $2 = any (le.tags)
+	and      lu.active = true
+	order by le.created_at desc
+	limit $3
+	offset $4
+`
+
+// GetUserPublicLogbook returns an active user's public bookmarks.
+func GetUserPublicLogbook(username string, tag string, offset int, limit int) ([]*Entry, error) {
 	var entries []*Entry
 
 	if tag != "" {
@@ -78,6 +102,20 @@ func GetUserLogbook(username string, tag string, offset int, limit int) ([]*Entr
 	}
 
 	err := db.Select(&entries, getUserLogbookSQL, username, limit, offset)
+	return entries, err
+}
+
+// GetLogbook returns a logged-in user's logbook.
+func GetLogbook(userID uint64, tag string, offset int, limit int) ([]*Entry, error) {
+	var entries []*Entry
+
+	if tag != "" {
+		err := db.Select(&entries, getLogbookWithTagSQL, userID, tag, limit, offset)
+		return entries, err
+	}
+
+	err := db.Select(&entries, getLogbookSQL, userID, limit, offset)
+
 	return entries, err
 }
 

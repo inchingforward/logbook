@@ -143,13 +143,48 @@ func getUserLogbook(c echo.Context) error {
 	pag := makePaginator(c)
 	tag := c.QueryParam("tag")
 
-	logbook, err := models.GetUserLogbook(username, tag, pag.offset, pag.entriesPerPage)
+	logbook, err := models.GetUserPublicLogbook(username, tag, pag.offset, pag.entriesPerPage)
 	if err != nil {
 		log.Printf("Error getting user logbook: %v\n", err)
 		return renderError(c, err.Error())
 	}
 
-	err = c.Render(http.StatusOK, "user_logbook.html", pongo2.Context{"logbook": logbook, "username": username, "paginator": pag, "tag": tag})
+	err = c.Render(http.StatusOK, "user_logbook.html", pongo2.Context{
+		"logbook":   logbook,
+		"username":  username,
+		"paginator": pag,
+		"tag":       tag,
+	})
+
+	if err != nil {
+		err = c.Render(http.StatusOK, "error.html", pongo2.Context{"error": err.Error()})
+	}
+
+	return err
+}
+
+func getLogbook(c echo.Context) error {
+	sess, err := store.Get(c.Request(), "session")
+	if err != nil {
+		return c.Render(http.StatusOK, "error.html", pongo2.Context{"error": err.Error()})
+	}
+
+	sessUser := sess.Values["User"].(SessionUser)
+	pag := makePaginator(c)
+	tag := c.QueryParam("tag")
+
+	logbook, err := models.GetLogbook(sessUser.ID, tag, pag.offset, pag.entriesPerPage)
+	if err != nil {
+		log.Printf("Error getting user logbook: %v\n", err)
+		return renderError(c, err.Error())
+	}
+
+	err = c.Render(http.StatusOK, "logbook.html", pongo2.Context{
+		"logbook":   logbook,
+		"paginator": pag,
+		"tag":       tag,
+	})
+
 	if err != nil {
 		err = c.Render(http.StatusOK, "error.html", pongo2.Context{"error": err.Error()})
 	}
@@ -207,15 +242,17 @@ func main() {
 	e.GET("/login", getLogin)
 	e.POST("/login", login)
 	e.POST("/logout", logout)
-	e.GET("/logbook", notYetImplemented)
+
+	// FIXME: these require a session
+	e.GET("/logbook", getLogbook)
 	e.GET("/logbook/add", notYetImplemented)
 	e.POST("/logbook/add", notYetImplemented)
 	e.GET("/logbook/:uuid", notYetImplemented)
 	e.POST("/logbook/:uuid", notYetImplemented)
 	e.POST("/fetchtitle", notYetImplemented)
+
 	e.GET("/users/:username", notYetImplemented)
 	e.GET("/users/:username/logbook", getUserLogbook)
-	e.GET("/users/:username/logbook/:uuid", notYetImplemented)
 	e.GET("/sessiondump", sessionDump)
 
 	e.Logger.Fatal(e.Start(":8006"))

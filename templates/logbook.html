@@ -2,9 +2,9 @@
 
 {% block content %}
 <div id="tagInfo">
-    <h2>{{ username }}'s Logbook</h2>
+    <h2>Your Logbook</h2>
     {% if tag %}
-    <p>Tag: {{ tag }} <a href="/users/{{ username }}/logbook">remove</a></p>
+    <p>Tag: {{ tag }} <a href="/logbook">remove</a></p>
     {% endif %}
 </div>
 
@@ -15,7 +15,7 @@
         {{ entry.Notes|markdown }}
         <h2>
             {% for tag in entry.Tags %}
-            <a href="/users/{{ username }}/logbook?tag={{ tag }}">{{ tag }}</a>
+            <a href="/logbook?tag={{ tag }}">{{ tag }}</a>
             {% endfor %}
         {{ entry.Tags }}
         </h2>
@@ -29,12 +29,12 @@
 
 <div id="pagination">
 {% if paginator.page == 2 %}
-<a href="/users/{{ username }}/logbook{% if tag %}?tag={{ tag }}{% endif %}">Prev</a>
+<a href="/logbook{% if tag %}?tag={{ tag }}{% endif %}">Prev</a>
 {% elif paginator.page > 1 %}
-<a href="/users/{{ username }}/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.prevPage }}">Prev</a>
+<a href="/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.prevPage }}">Prev</a>
 {% endif %}
 {% if logbook|length == paginator.entriesPerPage  %}
-<a href="/users/{{ username }}/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.nextPage }}">Next</a>
+<a href="/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.nextPage }}">Next</a>
 {% endif %}
 </div>
 {% endblock %}
