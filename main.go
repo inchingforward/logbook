@@ -26,8 +26,9 @@ type paginator struct {
 
 // Renderer renders templates.
 type Renderer struct {
-	TemplateDir string
-	Reload      bool
+	TemplateDir   string
+	Reload        bool
+	TemplateCache map[string]*pongo2.Template
 }
 
 const (
@@ -196,11 +197,29 @@ func getEntry(c echo.Context) error {
 	return c.Render(http.StatusOK, "logbook_entry.html", pongo2.Context{})
 }
 
+// GetTemplate returns a template, loading it every time if reload is true, lazy caching if reload is false.
+func (r *Renderer) GetTemplate(name string, reload bool) *pongo2.Template {
+	var template *pongo2.Template
+
+	filename := path.Join(r.TemplateDir, name)
+
+	if r.Reload {
+		return pongo2.Must(pongo2.FromFile(filename))
+	}
+
+	template, ok := r.TemplateCache[name]
+	if !ok {
+		log.Println("Template was not cached.")
+		template = pongo2.Must(pongo2.FromFile(filename))
+		r.TemplateCache[name] = template
+	}
+
+	return template
+}
+
 // Render renders a pongo2 template.
 func (r *Renderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	filename := path.Join(r.TemplateDir, name)
-	template := pongo2.Must(pongo2.FromFile(filename))
-
+	template := r.GetTemplate(name, debug)
 	pctx := data.(pongo2.Context)
 
 	sess, err := store.Get(c.Request(), "session")
@@ -238,7 +257,7 @@ func main() {
 
 	e.Use(middleware.Logger())
 
-	e.Renderer = &Renderer{TemplateDir: "templates", Reload: debug}
+	e.Renderer = &Renderer{TemplateDir: "templates", Reload: debug, TemplateCache: make(map[string]*pongo2.Template)}
 
 	e.Static("/static", "static")
 	e.GET("/", index)
