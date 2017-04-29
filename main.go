@@ -101,7 +101,7 @@ func login(c echo.Context) error {
 	sess, err := store.Get(c.Request(), "session")
 	if err != nil {
 		log.Printf("%v\n", err)
-		return c.Redirect(http.StatusFound, "/login")
+		return logout(c)
 	}
 
 	sess.Values["User"] = sessUser
@@ -186,6 +186,17 @@ func getLogbook(c echo.Context) error {
 	}
 
 	return err
+}
+
+func getAddEntry(c echo.Context) error {
+	return c.Render(http.StatusOK, "logbook_entry_add.html", pongo2.Context{})
+}
+
+func addEntry(c echo.Context) error {
+	return c.Render(http.StatusOK, "message.html", pongo2.Context{
+		"title":   "Entry Added",
+		"message": "Your entry was successfully added.",
+	})
 }
 
 func getEntry(c echo.Context) error {
@@ -275,8 +286,8 @@ func main() {
 
 	authedGroup := e.Group("/logbook", ensureSessionUser)
 	authedGroup.GET("", getLogbook)
-	authedGroup.GET("/add", notYetImplemented)
-	authedGroup.POST("/add", notYetImplemented)
+	authedGroup.GET("/add", getAddEntry)
+	authedGroup.POST("/add", addEntry)
 	authedGroup.GET("/:uuid", getEntry)
 	authedGroup.POST("/:uuid", notYetImplemented)
 	authedGroup.POST("/fetchtitle", notYetImplemented)
