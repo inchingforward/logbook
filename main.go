@@ -192,6 +192,10 @@ func getLogbook(c echo.Context) error {
 	return err
 }
 
+func getEntry(c echo.Context) error {
+	return c.Render(http.StatusOK, "logbook_entry.html", pongo2.Context{})
+}
+
 // Render renders a pongo2 template.
 func (r *Renderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	filename := path.Join(r.TemplateDir, name)
@@ -247,7 +251,7 @@ func main() {
 	e.GET("/logbook", getLogbook)
 	e.GET("/logbook/add", notYetImplemented)
 	e.POST("/logbook/add", notYetImplemented)
-	e.GET("/logbook/:uuid", notYetImplemented)
+	e.GET("/logbook/:uuid", getEntry)
 	e.POST("/logbook/:uuid", notYetImplemented)
 	e.POST("/fetchtitle", notYetImplemented)
 

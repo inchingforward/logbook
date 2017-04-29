@@ -20,7 +20,7 @@
         {{ entry.Tags }}
         </h2>
 
-        <h3>{{ entry.CreatedAt|timesince }}</h3>
+        <h3>{{ entry.CreatedAt|timesince }} &nbsp;&nbsp; <a href="/logbook/{{ entry.UUID }}">Edit</a></h3>
     </article>
 {% empty %}
 <p>No entries found.</p>
