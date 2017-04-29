@@ -106,7 +106,7 @@ func login(c echo.Context) error {
 	sess.Values["User"] = sessUser
 	sess.Save(c.Request(), c.Response())
 
-	return c.Redirect(http.StatusFound, "/sessiondump")
+	return c.Redirect(http.StatusFound, "/logbook")
 }
 
 func logout(c echo.Context) error {
