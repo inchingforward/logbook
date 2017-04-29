@@ -167,7 +167,7 @@ func getUserLogbook(c echo.Context) error {
 func getLogbook(c echo.Context) error {
 	sess, err := store.Get(c.Request(), "session")
 	if err != nil {
-		return c.Render(http.StatusOK, "error.html", pongo2.Context{"error": err.Error()})
+		return logout(c)
 	}
 
 	sessUser := sess.Values["User"].(SessionUser)
