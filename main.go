@@ -197,24 +197,15 @@ func getEntry(c echo.Context) error {
 	return c.Render(http.StatusOK, "logbook_entry.html", pongo2.Context{})
 }
 
-// GetTemplate returns a template, loading it every time if reload is true, lazy caching if reload is false.
+// GetTemplate returns a template, loading it every time if reload is true.
 func (r *Renderer) GetTemplate(name string, reload bool) *pongo2.Template {
-	var template *pongo2.Template
-
 	filename := path.Join(r.TemplateDir, name)
 
 	if r.Reload {
 		return pongo2.Must(pongo2.FromFile(filename))
 	}
 
-	template, ok := r.TemplateCache[name]
-	if !ok {
-		log.Println("Template was not cached.")
-		template = pongo2.Must(pongo2.FromFile(filename))
-		r.TemplateCache[name] = template
-	}
-
-	return template
+	return pongo2.Must(pongo2.FromCache(filename))
 }
 
 // Render renders a pongo2 template.
