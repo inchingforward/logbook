@@ -165,16 +165,11 @@ func getUserLogbook(c echo.Context) error {
 }
 
 func getLogbook(c echo.Context) error {
-	sess, err := store.Get(c.Request(), "session")
-	if err != nil {
-		return logout(c)
-	}
-
-	sessUser := sess.Values["User"].(SessionUser)
+	user := getUser(c)
 	pag := makePaginator(c)
 	tag := c.QueryParam("tag")
 
-	logbook, err := models.GetLogbook(sessUser.ID, tag, pag.offset, pag.entriesPerPage)
+	logbook, err := models.GetLogbook(user.ID, tag, pag.offset, pag.entriesPerPage)
 	if err != nil {
 		log.Printf("Error getting user logbook: %v\n", err)
 		return renderError(c, err.Error())
@@ -195,6 +190,11 @@ func getLogbook(c echo.Context) error {
 
 func getEntry(c echo.Context) error {
 	return c.Render(http.StatusOK, "logbook_entry.html", pongo2.Context{})
+}
+
+func getUser(c echo.Context) SessionUser {
+	sess, _ := store.Get(c.Request(), "session")
+	return sess.Values["User"].(SessionUser)
 }
 
 // GetTemplate returns a template, loading it every time if reload is true.
@@ -219,6 +219,22 @@ func (r *Renderer) Render(w io.Writer, name string, data interface{}, c echo.Con
 	}
 
 	return template.ExecuteWriter(pctx, w)
+}
+
+func ensureSessionUser(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		sess, err := store.Get(c.Request(), "session")
+		if err != nil {
+			return logout(c)
+		}
+
+		_, found := sess.Values["User"].(SessionUser)
+		if !found {
+			return logout(c)
+		}
+
+		return next(c)
+	}
 }
 
 func init() {
@@ -257,13 +273,13 @@ func main() {
 	e.POST("/login", login)
 	e.POST("/logout", logout)
 
-	// FIXME: these require a session
-	e.GET("/logbook", getLogbook)
-	e.GET("/logbook/add", notYetImplemented)
-	e.POST("/logbook/add", notYetImplemented)
-	e.GET("/logbook/:uuid", getEntry)
-	e.POST("/logbook/:uuid", notYetImplemented)
-	e.POST("/fetchtitle", notYetImplemented)
+	authedGroup := e.Group("/logbook", ensureSessionUser)
+	authedGroup.GET("", getLogbook)
+	authedGroup.GET("/add", notYetImplemented)
+	authedGroup.POST("/add", notYetImplemented)
+	authedGroup.GET("/:uuid", getEntry)
+	authedGroup.POST("/:uuid", notYetImplemented)
+	authedGroup.POST("/fetchtitle", notYetImplemented)
 
 	e.GET("/users/:username", notYetImplemented)
 	e.GET("/users/:username/logbook", getUserLogbook)
