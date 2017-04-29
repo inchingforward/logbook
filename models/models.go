@@ -43,7 +43,7 @@ func SetDB(adb *sqlx.DB) {
 	db = adb
 }
 
-var getUserLogbookSQL = `
+const getUserLogbookSQL = `
 	select   le.* 
 	from     logbook_entry le 
 			 inner join logbook_user lu on (le.user_id = lu.id)
@@ -55,7 +55,7 @@ var getUserLogbookSQL = `
 	offset $3
 `
 
-var getUserLogbookWithTagSQL = `
+const getUserLogbookWithTagSQL = `
 	select   le.* 
 	from     logbook_entry le 
 			 inner join logbook_user lu on (le.user_id = lu.id)
@@ -68,19 +68,18 @@ var getUserLogbookWithTagSQL = `
 	offset $4
 `
 
-var getLogbookSQL = `
+const getLogbookSQL = `
 	select   le.* 
 	from     logbook_entry le 
 			 inner join logbook_user lu on (le.user_id = lu.id)
 	where    lu.id = $1
-	and      le.private = false
 	and      lu.active = true
 	order by le.created_at desc
 	limit $2
 	offset $3
 `
 
-var getLogbookWithTagSQL = `
+const getLogbookWithTagSQL = `
 	select   le.* 
 	from     logbook_entry le 
 			 inner join logbook_user lu on (le.user_id = lu.id)
@@ -90,6 +89,13 @@ var getLogbookWithTagSQL = `
 	order by le.created_at desc
 	limit $3
 	offset $4
+`
+
+const getLogbookEntry = `
+	select *
+	from   logbook_entry
+	where  user_id = $1
+	and    uuid = $2
 `
 
 // GetUserPublicLogbook returns an active user's public bookmarks.
@@ -134,4 +140,13 @@ func Login(username string, password string) (User, error) {
 	}
 
 	return user, err
+}
+
+// GetLogbookEntry returns an unique Entry by user id and entry uuid.
+func GetLogbookEntry(userID uint64, entryUUID string) (Entry, error) {
+	var entry Entry
+
+	err := db.Get(&entry, getLogbookEntry, userID, entryUUID)
+
+	return entry, err
 }

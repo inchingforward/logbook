@@ -103,3 +103,9 @@ article p:last-of-type { padding-bottom: 0; }
     font-weight: 300;
 }
 #logoutForm input:hover { text-decoration: underline;  }
+
+.entryForm { padding-top: 30px; }
+.entryForm label { display: inline-block; width: 75px; vertical-align: top;}
+.entryForm input, textarea { width: 300px; }
+.entryForm textarea { height: 150px; }
+.entryForm input[type=submit] { width: 100px; margin-top: 20px; margin-left: 150px; }

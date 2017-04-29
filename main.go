@@ -200,7 +200,23 @@ func addEntry(c echo.Context) error {
 }
 
 func getEntry(c echo.Context) error {
-	return c.Render(http.StatusOK, "logbook_entry.html", pongo2.Context{})
+	user := getUser(c)
+	entryUUID := c.Param("uuid")
+
+	if entryUUID == "" {
+		return c.Render(http.StatusNotFound, "404.html", pongo2.Context{})
+	}
+
+	entry, err := models.GetLogbookEntry(user.ID, entryUUID)
+	if err != nil {
+		return c.Render(http.StatusOK, "message.html", pongo2.Context{
+			"message": err.Error(),
+		})
+	}
+
+	return c.Render(http.StatusOK, "logbook_entry_edit.html", pongo2.Context{
+		"entry": entry,
+	})
 }
 
 func getUser(c echo.Context) SessionUser {

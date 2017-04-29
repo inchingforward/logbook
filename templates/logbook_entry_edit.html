@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Edit Entry</h2>
+
+<form method="post" action="/logbook/edit" class="entryForm">
+    <input type="hidden" name="id" value="{{ entry.ID }}" />
+    <input type="hidden" name="uuid" value="{{ entry.UUID }}" />
+
+
+    <label for="title">Title:</label> 
+    <input type="text" id="title" name="title" value="{{ entry.Title }}" /><br />
+
+    <label for="url">URL:</label>
+    <input type="text" id="url" name="url" value="{{ entry.URL }}" /><br />
+
+    <label for="notes">Notes:</label>
+    <textarea id="notes" name="notes">{{ entry.Notes }}</textarea><br />
+    
+    <label for="private">Private:</label>
+    <input type="checkbox" {% if entry.Private %}checked="checked"{% endif %} /><br />
+
+	<label for="tags">Tags:</label>
+    <input type="text" id="tags" name="tags" value="{% for tag in entry.Tags %}{{ tag }},{% endfor %}" /><br />
+	
+    <input type="submit" value="Save" />
+</form>
+
+{% endblock %}
