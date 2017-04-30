@@ -1,0 +1,22 @@
+<form method="post" action="{{ url }}" class="entryForm">
+    <input type="hidden" name="id" value="{{ entry.ID }}" />
+    <input type="hidden" name="uuid" value="{{ entry.UUID }}" />
+
+
+    <label for="title">Title:</label> 
+    <input type="text" id="title" name="title" value="{{ entry.Title }}" /><br />
+
+    <label for="url">URL:</label>
+    <input type="text" id="url" name="url" value="{{ entry.URL }}" /><br />
+
+    <label for="notes">Notes:</label>
+    <textarea id="notes" name="notes">{{ entry.Notes }}</textarea><br />
+    
+    <label for="private">Private:</label>
+    <input type="checkbox" id="private" name="private" {% if entry.Private %}checked="checked"{% endif %} value="true" /><br />
+
+	<label for="tags">Tags:</label>
+    <input type="text" id="tags" name="tags" value="{{ entry.Tags|join:", "}}" /><br />
+	
+    <input type="submit" value="Save" />
+</form>

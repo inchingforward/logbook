@@ -7,9 +7,11 @@
 </head>
 <body>
     <nav>
-        <a class="siteUrl" href="/">Logbook</a>
         {% if session.Values.User.ID %}
+        <a class="siteUrl" href="/logbook">Logbook</a>
         <a href="/logbook/add">Add</a>
+        {% else %}
+        <a class="siteUrl" href="/">Logbook</a>
         {% endif %}
         <div class="actions">
             <a href="/about">About</a>

@@ -5,6 +5,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
+	"github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -22,12 +23,12 @@ type User struct {
 
 // An Entry is a URL and/or Notes.
 type Entry struct {
-	ID        uint64         `db:"id"`
-	UUID      string         `db:"uuid"`
-	Title     string         `db:"title"`
-	URL       string         `db:"url"`
-	Notes     string         `db:"notes"`
-	Private   bool           `db:"private"`
+	ID        uint64         `db:"id" form:"id"`
+	UUID      string         `db:"uuid" form:"uuid"`
+	Title     string         `db:"title" form:"title"`
+	URL       string         `db:"url" form:"url"`
+	Notes     string         `db:"notes" form:"notes"`
+	Private   bool           `db:"private" form:"private"`
 	UserID    uint64         `db:"user_id"`
 	CreatedAt time.Time      `db:"created_at"`
 	UpdatedAt time.Time      `db:"updated_at"`
@@ -98,6 +99,27 @@ const getLogbookEntry = `
 	and    uuid = $2
 `
 
+// NamedInsert executes the query insert statement and returns the
+// generated sequence id.
+func NamedInsert(query string, arg interface{}) (uint64, error) {
+	rows, err := db.NamedQuery(query, arg)
+	if err != nil {
+		return 0, err
+	}
+
+	if !rows.Next() {
+		return 0, rows.Err()
+	}
+
+	var id uint64
+	err = rows.Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
 // GetUserPublicLogbook returns an active user's public bookmarks.
 func GetUserPublicLogbook(username string, tag string, offset int, limit int) ([]*Entry, error) {
 	var entries []*Entry
@@ -149,4 +171,32 @@ func GetLogbookEntry(userID uint64, entryUUID string) (Entry, error) {
 	err := db.Get(&entry, getLogbookEntry, userID, entryUUID)
 
 	return entry, err
+}
+
+// SaveEntry saves a new Entry into the database.
+func SaveEntry(userID uint64, entry *Entry) error {
+	if entry.UUID == "" {
+		entry.UUID = uuid.NewV4().String()
+	}
+
+	if entry.ID == 0 {
+		entry.CreatedAt = time.Now()
+	}
+
+	entry.UpdatedAt = time.Now()
+	entry.UserID = userID
+
+	id, err := NamedInsert(`
+		insert into logbook_entry 
+		values (default, :uuid, :title, :url, :notes, :private, :user_id, :created_at, :updated_at, :tags) 
+		returning id
+	`, entry)
+
+	if err != nil {
+		return err
+	}
+
+	entry.ID = id
+
+	return nil
 }

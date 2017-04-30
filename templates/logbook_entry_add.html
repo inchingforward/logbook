@@ -4,8 +4,13 @@
 
 <h2>Add Logbook Entry</h2>
 
-<form method="post" action="/logbook/add">
-    <input type="submit" value="Save" />
-</form>
+{% with url="/logbook/add" %}
+{% include "logbook_entry_form.html" %}
+{% endwith %}
 
+<script>
+    window.onload = function() {
+        document.getElementById("title").focus();
+    }
+</script>
 {% endblock %}

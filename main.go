@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/gob"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"path"
 	"strconv"
+	"strings"
 
 	"github.com/flosch/pongo2"
 	_ "github.com/flosch/pongo2-addons"
@@ -193,6 +195,28 @@ func getAddEntry(c echo.Context) error {
 }
 
 func addEntry(c echo.Context) error {
+	entry := new(models.Entry)
+	if err := c.Bind(entry); err != nil {
+		return renderError(c, err.Error())
+	}
+
+	tagStr := c.FormValue("tags")
+	tags := strings.Split(tagStr, ",")
+	for i, tag := range tags {
+		tags[i] = strings.TrimSpace(tag)
+	}
+	entry.Tags = tags
+
+	fmt.Println("before save:", entry)
+
+	user := getUser(c)
+	err := models.SaveEntry(user.ID, entry)
+	if err != nil {
+		return renderError(c, err.Error())
+	}
+
+	fmt.Println("after save:", entry)
+
 	return c.Render(http.StatusOK, "message.html", pongo2.Context{
 		"title":   "Entry Added",
 		"message": "Your entry was successfully added.",
