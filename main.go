@@ -238,7 +238,7 @@ func updateEntry(c echo.Context) error {
 		return renderError(c, err.Error())
 	}
 
-	return c.Redirect(http.StatusFound, "/")
+	return c.Redirect(http.StatusFound, "/logbook")
 }
 
 func getFormEntry(c echo.Context) (*models.Entry, error) {

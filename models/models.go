@@ -205,7 +205,7 @@ func UpdateEntry(entry *Entry) error {
 		       url = :url, 
 			   notes = :notes, 
 			   private = :private,
-			   updated_at = :updatedAt
+			   updated_at = :updated_at,
 			   tags = :tags
 		where  id = :id
 	`, entry)
