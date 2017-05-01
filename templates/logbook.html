@@ -11,7 +11,7 @@
 <section>
 {% for entry in logbook %}
     <article>
-        <h1><a href="{{ entry.URL }}">{{entry.Title}}</a></h1>
+        <h1{% if entry.Private %} class="private"{% endif %}><a href="{{ entry.URL }}">{{entry.Title}}</a></h1>
         {{ entry.Notes|markdown }}
         <h2>
             {% for tag in entry.Tags %}

@@ -85,6 +85,7 @@ article h3 { font-size: 0.7rem; padding-top: 4px; color: #ccc; }
 article p { padding-top: 3px; padding-bottom: 3px; }
 /* Don't add padding after the last p in logbook entry. */
 article p:last-of-type { padding-bottom: 0; }
+.private { font-style: italic; }
 
 #pagination a { padding-right: 20px; }
 
