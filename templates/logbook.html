@@ -17,7 +17,6 @@
             {% for tag in entry.Tags %}
             <a href="/logbook?tag={{ tag }}">{{ tag }}</a>
             {% endfor %}
-        {{ entry.Tags }}
         </h2>
 
         <h3>{{ entry.CreatedAt|timesince }} &nbsp;&nbsp; <a href="/logbook/{{ entry.UUID }}">Edit</a></h3>
