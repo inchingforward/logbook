@@ -72,10 +72,6 @@ func getLogin(c echo.Context) error {
 	return renderTemplate(c, "login.html")
 }
 
-func sessionDump(c echo.Context) error {
-	return renderTemplate(c, "session.html")
-}
-
 func login(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
@@ -367,11 +363,9 @@ func main() {
 	authedGroup.POST("/add", addEntry)
 	authedGroup.GET("/:uuid", getEntry)
 	authedGroup.POST("/:uuid", updateEntry)
-	authedGroup.POST("/fetchtitle", notYetImplemented)
 
 	e.GET("/users/:username", notYetImplemented)
 	e.GET("/users/:username/logbook", getUserLogbook)
-	e.GET("/sessiondump", sessionDump)
 
 	e.Logger.Fatal(e.Start(":8006"))
 }
