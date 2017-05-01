@@ -195,22 +195,12 @@ func getAddEntry(c echo.Context) error {
 }
 
 func addEntry(c echo.Context) error {
-	entry := new(models.Entry)
-	if err := c.Bind(entry); err != nil {
-		return renderError(c, err.Error())
-	}
-
-	tagStr := c.FormValue("tags")
-	tags := strings.Split(tagStr, ",")
-	for i, tag := range tags {
-		tags[i] = strings.TrimSpace(tag)
-	}
-	entry.Tags = tags
+	entry, err := getFormEntry(c)
 
 	fmt.Println("before save:", entry)
 
 	user := getUser(c)
-	err := models.SaveEntry(user.ID, entry)
+	err = models.InsertEntry(user.ID, entry)
 	if err != nil {
 		return renderError(c, err.Error())
 	}
@@ -221,6 +211,53 @@ func addEntry(c echo.Context) error {
 		"title":   "Entry Added",
 		"message": "Your entry was successfully added.",
 	})
+}
+
+func updateEntry(c echo.Context) error {
+	user := getUser(c)
+	uuid := c.FormValue("uuid")
+
+	entry, err := models.GetLogbookEntry(user.ID, uuid)
+	if err != nil || entry.ID == 0 {
+		return renderError(c, "Invalid entry.")
+	}
+
+	formEntry, err := getFormEntry(c)
+	if err != nil {
+		return renderError(c, err.Error())
+	}
+
+	entry.Title = formEntry.Title
+	entry.URL = formEntry.URL
+	entry.Notes = formEntry.Notes
+	entry.Private = formEntry.Private
+	entry.Tags = formEntry.Tags
+
+	err = models.UpdateEntry(&entry)
+	if err != nil {
+		return renderError(c, err.Error())
+	}
+
+	return c.Redirect(http.StatusFound, "/")
+}
+
+func getFormEntry(c echo.Context) (*models.Entry, error) {
+	entry := new(models.Entry)
+	if err := c.Bind(entry); err != nil {
+		return nil, err
+	}
+
+	tagStr := c.FormValue("tags")
+	tags := strings.Split(tagStr, ",")
+	for i, tag := range tags {
+		tags[i] = strings.TrimSpace(tag)
+	}
+
+	entry.Tags = tags
+
+	fmt.Println("getFormEntry:", entry)
+
+	return entry, nil
 }
 
 func getEntry(c echo.Context) error {
@@ -329,7 +366,7 @@ func main() {
 	authedGroup.GET("/add", getAddEntry)
 	authedGroup.POST("/add", addEntry)
 	authedGroup.GET("/:uuid", getEntry)
-	authedGroup.POST("/:uuid", notYetImplemented)
+	authedGroup.POST("/:uuid", updateEntry)
 	authedGroup.POST("/fetchtitle", notYetImplemented)
 
 	e.GET("/users/:username", notYetImplemented)

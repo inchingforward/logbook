@@ -173,16 +173,10 @@ func GetLogbookEntry(userID uint64, entryUUID string) (Entry, error) {
 	return entry, err
 }
 
-// SaveEntry saves a new Entry into the database.
-func SaveEntry(userID uint64, entry *Entry) error {
-	if entry.UUID == "" {
-		entry.UUID = uuid.NewV4().String()
-	}
-
-	if entry.ID == 0 {
-		entry.CreatedAt = time.Now()
-	}
-
+// InsertEntry saves a new Entry into the database.
+func InsertEntry(userID uint64, entry *Entry) error {
+	entry.UUID = uuid.NewV4().String()
+	entry.CreatedAt = time.Now()
 	entry.UpdatedAt = time.Now()
 	entry.UserID = userID
 
@@ -199,4 +193,22 @@ func SaveEntry(userID uint64, entry *Entry) error {
 	entry.ID = id
 
 	return nil
+}
+
+// UpdateEntry updates a logbook entry in the database.
+func UpdateEntry(entry *Entry) error {
+	entry.UpdatedAt = time.Now()
+
+	_, err := db.NamedQuery(`
+		update logbook_entry 
+		set    title = :title, 
+		       url = :url, 
+			   notes = :notes, 
+			   private = :private,
+			   updated_at = :updatedAt
+			   tags = :tags
+		where  id = :id
+	`, entry)
+
+	return err
 }
