@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/gob"
 	"flag"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -193,20 +192,13 @@ func getAddEntry(c echo.Context) error {
 func addEntry(c echo.Context) error {
 	entry, err := getFormEntry(c)
 
-	fmt.Println("before save:", entry)
-
 	user := getUser(c)
 	err = models.InsertEntry(user.ID, entry)
 	if err != nil {
 		return renderError(c, err.Error())
 	}
 
-	fmt.Println("after save:", entry)
-
-	return c.Render(http.StatusOK, "message.html", pongo2.Context{
-		"title":   "Entry Added",
-		"message": "Your entry was successfully added.",
-	})
+	return c.Redirect(http.StatusFound, "/logbook")
 }
 
 func updateEntry(c echo.Context) error {
@@ -250,8 +242,6 @@ func getFormEntry(c echo.Context) (*models.Entry, error) {
 	}
 
 	entry.Tags = tags
-
-	fmt.Println("getFormEntry:", entry)
 
 	return entry, nil
 }
