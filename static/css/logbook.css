@@ -57,7 +57,9 @@ html {
 }
 
 @media screen and (max-width: 780px) {
-    html  { padding-left: 25px; }
+    html  { padding-left: 15px; }
+    input { margin-bottom: 7px; }
+    label { margin-bottom: 2px; }
 }
 
 h1 { font-size: 2rem; }
@@ -67,12 +69,13 @@ p { line-height: 1.2rem; padding-bottom: 10px; }
 a { text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-nav { font-size: 1.3em; padding-bottom: 20px; }
-nav .actions { display: inline; position: absolute; right: 0; padding-right: 50px; }
-a.siteUrl { font-size: 1.5em; padding-right: 50px; }
+nav { font-size: 1.3rem; padding-bottom: 20px; }
+nav .actions { display: inline; float: right; padding: 0; margin: 0; vertical-align: top; }
+a.siteUrl { font-size: 1.3rem; padding-right: 50px; }
 
 @media screen and (max-width: 780px) {
-    nav .actions { display: inline; position: absolute; right: 0; padding-right: 25px; }
+    nav .actions { display: inline; float: right; padding-top: 4px; }
+    a.siteUrl { font-size: 1.3em; padding-right: 3px; }
 }
 
 section { padding-top: 20px; }
@@ -93,15 +96,17 @@ article p:last-of-type { padding-bottom: 0; }
 #tagInfo a { font-size: 0.75rem; color: #777; padding-left: 3px;}
 
 #login input { display: block; margin-bottom: 5px; }
-#logoutForm { display: inline; }
+#logoutForm { display: inline; padding: 0; margin: 0; }
 #logoutForm input { 
 	background: none; 
 	border: 0; 
 	cursor: pointer; 
 	color: #0000ee; 
-	font-size: 100%;
+        font-size: 1.3rem;
 	font-family: "Helvetica Neue", "Helvetica", "Liberation Sans", "Arial", sans-serif;
-    font-weight: 300;
+    	font-weight: 300;
+	padding: 0;
+	margin: 0;
 }
 #logoutForm input:hover { text-decoration: underline;  }
 
