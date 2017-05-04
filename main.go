@@ -292,6 +292,8 @@ func (r *Renderer) Render(w io.Writer, name string, data interface{}, c echo.Con
 		pctx["session"] = sess
 	}
 
+	pctx["csrf"] = c.Get("csrf")
+
 	return template.ExecuteWriter(pctx, w)
 }
 
@@ -337,6 +339,9 @@ func main() {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
+	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		TokenLookup: "form:csrf",
+	}))
 
 	e.Renderer = &Renderer{TemplateDir: "templates", Reload: debug, TemplateCache: make(map[string]*pongo2.Template)}
 

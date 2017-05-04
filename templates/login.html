@@ -6,6 +6,7 @@
 {% endif %}
 
 <form id="login" method="post" action="/login">
+<input type="hidden" name="csrf" value="{{ csrf }}" />
 
 <input type="text" id="username" name="username" placeholder="Username" value="{{ username }}" />
 <input type="password" id="password" name="password" placeholder="Password" value="{{ password }}" />
