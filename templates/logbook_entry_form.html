@@ -1,4 +1,4 @@
-<form method="post" action="{{ url }}" class="entryForm">
+<form method="post" action="{{ url }}" class="entryForm" onsubmit="return isValidEntryForm(this);">
     <input type="hidden" name="csrf" value="{{ csrf }}" />
     <input type="hidden" name="uuid" value="{{ entry.UUID }}" />
 
@@ -19,3 +19,14 @@
 	
     <input type="submit" value="Save" />
 </form>
+
+<script>
+    function isValidEntryForm(form) {
+        if (!form.title.value) {
+            alert("Title is required.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
