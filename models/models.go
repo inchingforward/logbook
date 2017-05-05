@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -98,6 +99,15 @@ const getLogbookEntry = `
 	where  user_id = $1
 	and    uuid = $2
 `
+
+// Validate validates a Logbook Entry, returning an error if it is not valid.
+func (entry *Entry) Validate() error {
+	if entry.Title == "" {
+		return errors.New("title is required")
+	}
+
+	return nil
+}
 
 // NamedInsert executes the query insert statement and returns the
 // generated sequence id.

@@ -115,3 +115,5 @@ article p:last-of-type { padding-bottom: 0; }
 .entryForm input, textarea { width: 300px; }
 .entryForm textarea { height: 150px; }
 .entryForm input[type=submit] { width: 100px; margin-top: 20px; margin-left: 150px; }
+
+.error { color: #dd5555; padding-bottom: 20px; }

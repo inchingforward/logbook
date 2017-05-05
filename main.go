@@ -192,6 +192,14 @@ func getAddEntry(c echo.Context) error {
 func addEntry(c echo.Context) error {
 	entry, err := getFormEntry(c)
 
+	err = entry.Validate()
+	if err != nil {
+		return c.Render(http.StatusBadRequest, "logbook_entry_add.html", pongo2.Context{
+			"error": err.Error(),
+			"entry": entry,
+		})
+	}
+
 	user := getUser(c)
 	err = models.InsertEntry(user.ID, entry)
 	if err != nil {
@@ -220,6 +228,14 @@ func updateEntry(c echo.Context) error {
 	entry.Notes = formEntry.Notes
 	entry.Private = formEntry.Private
 	entry.Tags = formEntry.Tags
+
+	err = entry.Validate()
+	if err != nil {
+		return c.Render(http.StatusBadRequest, "logbook_entry_add.html", pongo2.Context{
+			"error": err.Error(),
+			"entry": entry,
+		})
+	}
 
 	err = models.UpdateEntry(&entry)
 	if err != nil {

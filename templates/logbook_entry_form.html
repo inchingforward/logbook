@@ -1,4 +1,7 @@
 <form method="post" action="{{ url }}" class="entryForm" onsubmit="return isValidEntryForm(this);">
+    {% if error %}
+    <p class="error">{{ error|capfirst }}.</p>
+    {% endif %}
     <input type="hidden" name="csrf" value="{{ csrf }}" />
     <input type="hidden" name="uuid" value="{{ entry.UUID }}" />
 
