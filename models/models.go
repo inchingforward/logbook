@@ -123,6 +123,7 @@ func NamedInsert(query string, arg interface{}) (uint64, error) {
 
 	var id uint64
 	err = rows.Scan(&id)
+	rows.Close()
 	if err != nil {
 		return 0, err
 	}
