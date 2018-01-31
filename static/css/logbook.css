@@ -53,7 +53,8 @@ html {
     font-family: "Helvetica Neue", "Helvetica", "Liberation Sans", "Arial", sans-serif;
     font-weight: 300;
     padding: 10px;
-    padding-left: 50px;
+    padding-left: 25%;
+    padding-right: 25%;
 }
 
 @media screen and (max-width: 780px) {
@@ -80,12 +81,12 @@ a.siteUrl { font-size: 1.3rem; padding-right: 50px; }
 
 section { padding-top: 20px; }
 
-article { padding-bottom: 20px; }
+article { padding-bottom: 30px; }
 article h1 { font-size: 1.25rem; }
 article h2 { font-size: 0.8rem; padding-top: 3px; }
 article h2 a { color: #777; padding-right: 2px; }
 article h3 { font-size: 0.7rem; padding-top: 4px; color: #ccc; }
-article p { padding-top: 3px; padding-bottom: 3px; }
+article p { padding-top: 5px; padding-bottom: 5px; }
 /* Don't add padding after the last p in logbook entry. */
 article p:last-of-type { padding-bottom: 0; }
 .private { font-style: italic; }
