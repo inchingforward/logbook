@@ -118,3 +118,10 @@ article p:last-of-type { padding-bottom: 0; }
 .entryForm input[type=submit] { width: 100px; margin-top: 20px; margin-left: 150px; }
 
 .error { color: #dd5555; padding-bottom: 20px; }
+
+ul {
+	line-height: 1.3em;
+	list-style-type: disc;
+	list-style-position: inside;
+	padding: 5px 0 5px 0;
+}
