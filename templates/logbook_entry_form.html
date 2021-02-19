@@ -6,10 +6,10 @@
     <input type="hidden" name="uuid" value="{{ entry.UUID }}" />
 
     <label for="title">Title:</label> 
-    <input type="text" id="title" name="title" value="{{ entry.Title }}" /><br />
+    <input type="text" id="title" name="title" value="{% firstof entry.Title entryTitle %}" /><br />
 
     <label for="url">URL:</label>
-    <input type="text" id="url" name="url" value="{{ entry.URL }}" /><br />
+    <input type="text" id="url" name="url" value="{% firstof entry.URL entryUrl %}" /><br />
 
     <label for="notes">Notes:</label>
     <textarea id="notes" name="notes">{{ entry.Notes }}</textarea><br />

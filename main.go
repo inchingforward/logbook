@@ -223,7 +223,10 @@ func getLogbook(c echo.Context) error {
 }
 
 func getAddEntry(c echo.Context) error {
-	return c.Render(http.StatusOK, "logbook_entry_add.html", pongo2.Context{})
+	return c.Render(http.StatusOK, "logbook_entry_add.html", pongo2.Context{
+		"entryUrl":   c.QueryParam("url"),
+		"entryTitle": c.QueryParam("title"),
+	})
 }
 
 func addEntry(c echo.Context) error {
