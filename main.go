@@ -11,18 +11,19 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/flosch/pongo2"
-	_ "github.com/flosch/pongo2-addons"
+	"github.com/flosch/pongo2/v4"
 	"github.com/gorilla/sessions"
 	"github.com/inchingforward/logbook/models"
+	_ "github.com/iris-contrib/pongo2-addons/v4"
 	"github.com/jmoiron/sqlx"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo-contrib/session"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
 )
 
 type paginator struct {
-	entriesPerPage, offset, page, prevPage, nextPage int
+	EntriesPerPage, Offset, Page, PrevPage, NextPage int
 }
 
 // Renderer renders templates.
@@ -37,14 +38,40 @@ const (
 )
 
 var (
-	debug = false
-	store sessions.Store
+	debug    = false
+	storeKey string
 )
 
 // A SessionUser is stored in a user's session.
 type SessionUser struct {
 	ID       uint64
 	UserName string
+}
+
+// GetTemplate returns a template, loading it every time if reload is true.
+func (r *Renderer) GetTemplate(name string, reload bool) *pongo2.Template {
+	filename := path.Join(r.TemplateDir, name)
+
+	if r.Reload {
+		return pongo2.Must(pongo2.FromFile(filename))
+	}
+
+	return pongo2.Must(pongo2.FromCache(filename))
+}
+
+// Render renders a pongo2 template.
+func (r *Renderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	template := r.GetTemplate(name, debug)
+	pctx := data.(pongo2.Context)
+
+	sess, err := session.Get("session", c)
+	if err == nil {
+		pctx["session"] = sess
+	}
+
+	pctx["csrf"] = c.Get("csrf")
+
+	return template.ExecuteWriter(pctx, w)
 }
 
 func notYetImplemented(c echo.Context) error {
@@ -68,13 +95,14 @@ func about(c echo.Context) error {
 }
 
 func getLogin(c echo.Context) error {
-	return renderTemplate(c, "login.html")
+	return c.Render(http.StatusOK, "login.html", pongo2.Context{"csrf": c.Get("csrf")})
 }
 
 func login(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
 
+	log.Print("1")
 	if username == "" || password == "" {
 		return c.Render(http.StatusBadRequest, "login.html", pongo2.Context{
 			"message":  "Username and Password are required.",
@@ -94,21 +122,29 @@ func login(c echo.Context) error {
 		})
 	}
 
+	log.Print("2")
+
 	sessUser := SessionUser{user.ID, user.UserName}
-	sess, err := store.Get(c.Request(), "session")
+	sess, err := session.Get("session", c)
 	if err != nil {
 		log.Printf("%v\n", err)
 		return logout(c)
 	}
-
+	log.Print("3")
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7,
+		HttpOnly: true,
+	}
+	log.Print("4")
 	sess.Values["User"] = sessUser
 	sess.Save(c.Request(), c.Response())
-
+	log.Print("5")
 	return c.Redirect(http.StatusFound, "/logbook")
 }
 
 func logout(c echo.Context) error {
-	sess, _ := store.Get(c.Request(), "session")
+	sess, _ := session.Get("session", c)
 
 	sess.Values["User"] = nil
 	sess.Save(c.Request(), c.Response())
@@ -141,12 +177,13 @@ func getUserLogbook(c echo.Context) error {
 	pag := makePaginator(c)
 	tag := c.QueryParam("tag")
 
-	logbook, err := models.GetUserPublicLogbook(username, tag, pag.offset, pag.entriesPerPage)
+	logbook, err := models.GetUserPublicLogbook(username, tag, pag.Offset, pag.EntriesPerPage)
 	if err != nil {
 		log.Printf("Error getting user logbook: %v\n", err)
 		return renderError(c, err.Error())
 	}
 
+	log.Print("BEFORE THE RENDER!")
 	err = c.Render(http.StatusOK, "user_logbook.html", pongo2.Context{
 		"logbook":   logbook,
 		"username":  username,
@@ -166,7 +203,7 @@ func getLogbook(c echo.Context) error {
 	pag := makePaginator(c)
 	tag := c.QueryParam("tag")
 
-	logbook, err := models.GetLogbook(user.ID, tag, pag.offset, pag.entriesPerPage)
+	logbook, err := models.GetLogbook(user.ID, tag, pag.Offset, pag.EntriesPerPage)
 	if err != nil {
 		log.Printf("Error getting user logbook: %v\n", err)
 		return renderError(c, err.Error())
@@ -278,44 +315,21 @@ func getEntry(c echo.Context) error {
 	}
 
 	return c.Render(http.StatusOK, "logbook_entry_edit.html", pongo2.Context{
+		"csrf":  c.Get("csrf"),
 		"entry": entry,
 	})
 }
 
 func getUser(c echo.Context) SessionUser {
-	sess, _ := store.Get(c.Request(), "session")
+	sess, _ := session.Get("session", c)
 	return sess.Values["User"].(SessionUser)
-}
-
-// GetTemplate returns a template, loading it every time if reload is true.
-func (r *Renderer) GetTemplate(name string, reload bool) *pongo2.Template {
-	filename := path.Join(r.TemplateDir, name)
-
-	if r.Reload {
-		return pongo2.Must(pongo2.FromFile(filename))
-	}
-
-	return pongo2.Must(pongo2.FromCache(filename))
-}
-
-// Render renders a pongo2 template.
-func (r *Renderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	template := r.GetTemplate(name, debug)
-	pctx := data.(pongo2.Context)
-
-	sess, err := store.Get(c.Request(), "session")
-	if err == nil {
-		pctx["session"] = sess
-	}
-
-	pctx["csrf"] = c.Get("csrf")
-
-	return template.ExecuteWriter(pctx, w)
 }
 
 func ensureSessionUser(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		sess, err := store.Get(c.Request(), "session")
+		log.Print("ensureSessionUser")
+		sess, err := session.Get("session", c)
+		log.Printf("session: %v", sess)
 		if err != nil {
 			return logout(c)
 		}
@@ -341,7 +355,6 @@ func init() {
 	if storeKey == "" {
 		log.Fatal("The LOGBOOK_STORE_KEY is not set")
 	}
-	store = sessions.NewCookieStore([]byte(storeKey))
 
 	gob.Register(SessionUser{})
 }
@@ -355,9 +368,10 @@ func main() {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
-	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup: "form:csrf",
-	}))
+	// e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+	// 	TokenLookup: "form:csrf",
+	// }))
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(storeKey))))
 
 	e.Renderer = &Renderer{TemplateDir: "templates", Reload: debug, TemplateCache: make(map[string]*pongo2.Template)}
 

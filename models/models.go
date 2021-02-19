@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
-	"github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -186,7 +186,7 @@ func GetLogbookEntry(userID uint64, entryUUID string) (Entry, error) {
 
 // InsertEntry saves a new Entry into the database.
 func InsertEntry(userID uint64, entry *Entry) error {
-	entry.UUID = uuid.NewV4().String()
+	entry.UUID = uuid.New().String()
 	entry.CreatedAt = time.Now()
 	entry.UpdatedAt = time.Now()
 	entry.UserID = userID
