@@ -102,7 +102,6 @@ func login(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
 
-	log.Print("1")
 	if username == "" || password == "" {
 		return c.Render(http.StatusBadRequest, "login.html", pongo2.Context{
 			"message":  "Username and Password are required.",
@@ -122,24 +121,22 @@ func login(c echo.Context) error {
 		})
 	}
 
-	log.Print("2")
-
 	sessUser := SessionUser{user.ID, user.UserName}
 	sess, err := session.Get("session", c)
 	if err != nil {
 		log.Printf("%v\n", err)
 		return logout(c)
 	}
-	log.Print("3")
+
 	sess.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   86400 * 7,
 		HttpOnly: true,
 	}
-	log.Print("4")
+
 	sess.Values["User"] = sessUser
 	sess.Save(c.Request(), c.Response())
-	log.Print("5")
+
 	return c.Redirect(http.StatusFound, "/logbook")
 }
 
