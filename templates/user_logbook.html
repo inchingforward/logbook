@@ -31,10 +31,10 @@
 {% if paginator.Page == 2 %}
 <a href="/users/{{ username }}/logbook{% if tag %}?tag={{ tag }}{% endif %}">Prev</a>
 {% elif paginator.Page > 1 %}
-<a href="/users/{{ username }}/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.prevPage }}">Prev</a>
+<a href="/users/{{ username }}/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.PrevPage }}">Prev</a>
 {% endif %}
 {% if logbook|length == paginator.EntriesPerPage  %}
-<a href="/users/{{ username }}/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.nextPage }}">Next</a>
+<a href="/users/{{ username }}/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.NextPage }}">Next</a>
 {% endif %}
 </div>
 {% endblock %}

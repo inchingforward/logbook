@@ -27,13 +27,13 @@
 </section>
 
 <div id="pagination">
-{% if paginator.page == 2 %}
+{% if paginator.Page == 2 %}
 <a href="/logbook{% if tag %}?tag={{ tag }}{% endif %}">Prev</a>
-{% elif paginator.page > 1 %}
-<a href="/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.prevPage }}">Prev</a>
+{% elif paginator.Page > 1 %}
+<a href="/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.PrevPage }}">Prev</a>
 {% endif %}
-{% if logbook|length == paginator.entriesPerPage  %}
-<a href="/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.nextPage }}">Next</a>
+{% if logbook|length == paginator.EntriesPerPage  %}
+<a href="/logbook?{% if tag %}tag={{ tag }}&{% endif %}page={{ paginator.NextPage }}">Next</a>
 {% endif %}
 </div>
 {% endblock %}
