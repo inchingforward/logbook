@@ -237,6 +237,8 @@ func addEntry(c echo.Context) error {
 		})
 	}
 
+	entry.Notes = strings.ReplaceAll(entry.Notes, "\r", "\n")
+
 	user := getUser(c)
 	err = models.InsertEntry(user.ID, entry)
 	if err != nil {
@@ -265,6 +267,8 @@ func updateEntry(c echo.Context) error {
 	entry.Notes = formEntry.Notes
 	entry.Private = formEntry.Private
 	entry.Tags = formEntry.Tags
+
+	entry.Notes = strings.ReplaceAll(entry.Notes, "\r", "\n")
 
 	err = entry.Validate()
 	if err != nil {
